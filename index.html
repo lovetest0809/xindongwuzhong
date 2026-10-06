@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>心动物种 · 恋爱人格图鉴</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:#fff;color:#18191B;line-height:1.75;font-size:15px;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+:root{
+  --t1:#18191B; --t2:#66686C; --t3:#9A9CA1;
+  --line:#EFEFF1; --line2:#E2E2E6; --fill:#FAFAFB;
+  --red:#FF2442; --red2:#E01838; --soft:#FFF0F3; --soft2:#FFF7F9;
+  --grad:linear-gradient(135deg,#FF5C7A,#FF2442);
+  --sh:0 2px 12px rgba(0,0,0,.045);
+}
+#app{min-height:100%;display:flex;flex-direction:column;background:#fff;}
+.screen{display:none;flex:1;}
+.screen.active{display:block;animation:in .42s cubic-bezier(.22,1,.36,1);}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ================= 锁屏 ================= */
+#lock{display:none;}
+#lock.active{display:flex;align-items:center;justify-content:center;padding:32px 24px;
+  background:radial-gradient(120% 55% at 50% 0%,#FFF0F3 0%,#fff 62%);}
+.lockbox{width:100%;max-width:352px;text-align:center;}
+.mark{width:64px;height:64px;margin:0 auto 22px;border-radius:20px;
+  background:var(--grad);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 26px -8px rgba(255,36,66,.5);}
+.mark svg{width:26px;height:26px;}
+.brand{font-size:11px;letter-spacing:7px;color:var(--t3);font-weight:700;margin-bottom:12px;text-indent:7px;}
+.lockbox h1{font-size:26px;font-weight:800;letter-spacing:-.3px;line-height:1.35;color:var(--t1);}
+.lockbox h1 em{font-style:normal;background:var(--grad);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lockbox .sub{font-size:12.5px;color:var(--t3);margin:14px 0 26px;}
+.pwfield{position:relative;margin-bottom:11px;}
+.pwfield input{width:100%;padding:16px 52px 16px 18px;border-radius:14px;
+  border:1.5px solid var(--line2);background:#fff;color:var(--t1);
+  font-size:16px;letter-spacing:1px;outline:none;font-family:inherit;
+  transition:border-color .2s,box-shadow .2s,background .2s;}
+.pwfield input::placeholder{color:var(--t3);letter-spacing:0;font-size:14px;}
+.pwfield input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(255,36,66,.09);}
+.pwfield .eye{position:absolute;right:15px;top:50%;transform:translateY(-50%);
+  color:var(--t3);font-size:12px;cursor:pointer;padding:7px;user-select:none;transition:color .2s;}
+.pwfield .eye:hover{color:var(--t2);}
+.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:16px;font-weight:700;
+  cursor:pointer;font-family:inherit;letter-spacing:.4px;
+  transition:transform .12s,box-shadow .25s,opacity .2s;}
+.btn:active{transform:scale(.985);}
+.btn-main{background:var(--grad);color:#fff;box-shadow:0 10px 24px -8px rgba(255,36,66,.55);}
+.btn-gray{background:var(--fill);color:var(--t2);border:1.5px solid var(--line2);}
+.err{color:var(--red);font-size:12.5px;height:19px;margin-bottom:9px;opacity:0;transition:opacity .2s;}
+.err.on{opacity:1;}
+.shake{animation:shk .42s;}
+@keyframes shk{0%,100%{transform:translateX(0)}15%{transform:translateX(-9px)}30%{transform:translateX(9px)}
+  45%{transform:translateX(-5px)}60%{transform:translateX(5px)}80%{transform:translateX(-2px)}}
+.valid{margin-top:18px;padding:13px 16px;background:var(--soft);border-radius:13px;
+  font-size:12.5px;color:#B21630;line-height:1.75;text-align:left;}
+.valid b{color:#8E1127;font-weight:700;}
+/* 锁屏 · 使用须知内联 */
+.locknote{margin-top:14px;padding:14px 16px;background:var(--fill);border:1px solid var(--line);
+  border-radius:14px;text-align:left;}
+.locknote .pt{display:block;font-size:11px;font-weight:800;color:var(--t2);letter-spacing:1.8px;margin-bottom:10px;}
+.locknote ul{list-style:none;margin:0;padding:0;}
+.locknote li{position:relative;padding-left:12px;font-size:12px;line-height:1.7;color:var(--t3);margin-bottom:6px;}
+.locknote li:last-child{margin-bottom:0;}
+.locknote li:before{content:'';position:absolute;left:0;top:7.5px;width:4px;height:4px;border-radius:50%;
+  background:var(--red);opacity:.5;}
+.locknote li b{color:var(--t2);font-weight:700;}
+.locknote .agree{margin-top:11px;padding-top:10px;border-top:1px solid var(--line);
+  font-size:11.5px;color:var(--t3);line-height:1.6;}
+
+/* ================= 弹层 ================= */
+.modal{position:fixed;inset:0;background:rgba(24,25,27,.45);backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:22px;z-index:99;}
+.modal.on{display:flex;}
+.modalbox{width:100%;max-width:398px;background:#fff;border-radius:22px;padding:26px 24px;
+  max-height:86vh;overflow:auto;box-shadow:0 24px 60px -20px rgba(0,0,0,.28);}
+.modalbox h2{font-size:17px;font-weight:800;margin-bottom:6px;}
+.modalbox .msub{font-size:12.5px;color:var(--t3);margin-bottom:18px;line-height:1.75;}
+.modalbox label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin:15px 0 6px;letter-spacing:.3px;}
+.modalbox input{width:100%;padding:13px 15px;border-radius:12px;border:1.5px solid var(--line2);
+  background:#fff;color:var(--t1);font-size:15px;outline:none;font-family:inherit;transition:border-color .2s,box-shadow .2s;}
+.modalbox input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(255,36,66,.09);}
+.hint{font-size:12.5px;margin-top:11px;min-height:18px;}
+.hint.ok{color:#0E9F6E;} .hint.bad{color:var(--red);}
+.hashout{background:var(--fill);border:1px solid var(--line);border-radius:11px;
+  padding:12px 14px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;word-break:break-all;
+  color:var(--t2);margin-top:8px;line-height:1.65;user-select:all;}
+.modalbtns{display:flex;gap:10px;margin-top:20px;}
+.modalbtns .btn{padding:13px;font-size:14.5px;}
+.notice li{font-size:13.3px;color:var(--t2);line-height:1.82;margin-bottom:11px;padding-left:17px;position:relative;list-style:none;}
+.notice li::before{content:"";position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--red);}
+.notice li b{color:var(--t1);font-weight:700;}
+.notice li:last-child{margin-bottom:0;}
+
+/* ================= 欢迎页 ================= */
+.intro-wrap{max-width:520px;margin:0 auto;padding:52px 24px 44px;}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:2.5px;
+  color:var(--red);font-weight:700;background:var(--soft);
+  padding:7px 15px;border-radius:999px;margin-bottom:24px;}
+.eyebrow i{width:5px;height:5px;border-radius:50%;background:var(--red);display:block;}
+.intro-wrap h1{font-size:39px;font-weight:800;line-height:1.25;letter-spacing:-1.3px;color:var(--t1);}
+.intro-wrap h1 em{font-style:normal;background:var(--grad);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.intro-wrap .desc{font-size:14.5px;color:var(--t2);margin-top:18px;line-height:1.9;}
+.species{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:28px 0 10px;}
+.species .sp{background:var(--soft2);border:1px solid var(--soft);border-radius:13px;
+  padding:13px 3px;text-align:center;}
+.species .sp b{display:block;font-size:12.5px;font-weight:800;color:#B21630;letter-spacing:.3px;}
+.species .sp span{display:block;font-size:10px;color:#D9899A;margin-top:3px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0 26px;}
+.stats .cell{background:var(--fill);border:1px solid var(--line);border-radius:13px;
+  padding:14px 4px;text-align:center;}
+.stats .cell b{display:block;font-size:20px;font-weight:800;line-height:1.2;color:var(--t1);letter-spacing:-.5px;}
+.stats .cell span{display:block;font-size:10.5px;color:var(--t3);margin-top:3px;}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px 21px;margin-bottom:14px;box-shadow:var(--sh);}
+.panel b.pt{display:block;font-size:11px;color:var(--t3);letter-spacing:2.5px;font-weight:700;margin-bottom:12px;}
+.panel ul{margin:0;list-style:none;}
+.panel li{font-size:13.4px;color:var(--t2);line-height:1.82;padding-left:16px;position:relative;margin-bottom:8px;}
+.panel li:last-child{margin-bottom:0;}
+.panel li::before{content:"";position:absolute;left:0;top:10px;width:5px;height:1.5px;background:var(--red);}
+.panel.notice{background:var(--soft2);border-color:var(--soft);}
+.panel.notice b.pt{color:#C4213C;}
+
+/* ================= 答题 ================= */
+.quiz-wrap{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;}
+.qtop{padding:20px 22px 14px;}
+.qrow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px;}
+.qrow .cur{font-size:12px;color:var(--t3);letter-spacing:.8px;}
+.qrow .cur b{color:var(--t1);font-size:22px;font-weight:800;letter-spacing:-.5px;}
+.qrow .cur s{text-decoration:none;color:var(--t3);font-size:13px;}
+.segs{display:flex;gap:3px;}
+.segs i{flex:1;height:3px;border-radius:2px;background:#EDEDF0;transition:background .3s ease;}
+.segs i.done{background:rgba(255,36,66,.4);}
+.segs i.now{background:var(--red);}
+.qmain{padding:28px 22px 0;flex:1;}
+.qindex{font-size:11px;letter-spacing:3px;color:var(--red);font-weight:800;margin-bottom:11px;}
+.qtext{font-size:21.5px;font-weight:800;line-height:1.55;letter-spacing:-.4px;margin-bottom:24px;color:var(--t1);}
+.opt{position:relative;display:flex;gap:13px;align-items:flex-start;padding:16px 17px;
+  border-radius:14px;background:var(--fill);border:1.5px solid transparent;margin-bottom:9px;
+  cursor:pointer;transition:all .18s;overflow:hidden;}
+.opt::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);
+  opacity:0;transition:opacity .2s;}
+.opt:hover{border-color:#F5C6CF;background:var(--soft2);}
+.opt:active{transform:scale(.992);}
+.opt.sel{border-color:var(--red);background:var(--soft);box-shadow:0 6px 18px -10px rgba(255,36,66,.6);}
+.opt.sel::before{opacity:1;}
+.opt .k{flex:0 0 25px;height:25px;border-radius:50%;border:1.5px solid var(--line2);
+  color:var(--t3);display:flex;align-items:center;justify-content:center;font-size:11.5px;
+  font-weight:800;transition:all .2s;margin-top:1px;background:#fff;}
+.opt.sel .k{background:var(--red);border-color:var(--red);color:#fff;}
+.opt .tx{font-size:14.5px;line-height:1.68;color:var(--t2);transition:color .2s;}
+.opt.sel .tx{color:var(--t1);font-weight:600;}
+.qnav{padding:16px 22px 40px;}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;
+  color:var(--t3);font-size:13.5px;font-family:inherit;cursor:pointer;padding:9px 2px;transition:color .2s;}
+.back:hover{color:var(--red);}
+.back svg{width:14px;height:14px;}
+
+/* ================= 结果 ================= */
+.res-wrap{max-width:600px;margin:0 auto;padding:0 0 52px;}
+.res-hero{padding:44px 24px 30px;text-align:center;
+  background:radial-gradient(110% 70% at 50% 0%,#FFF0F3 0%,#fff 70%);}
+.res-hero .tagline{font-size:11px;letter-spacing:5px;color:var(--t3);font-weight:700;margin-bottom:16px;}
+.res-hero .code{font-size:48px;font-weight:800;letter-spacing:11px;line-height:1.1;text-indent:11px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.res-hero .nm{font-size:26px;font-weight:800;margin:18px 0 6px;color:var(--t1);letter-spacing:.2px;}
+.res-hero .sb{font-size:11px;letter-spacing:3.5px;color:var(--t3);font-weight:700;}
+.res-hero .sg{margin-top:18px;display:inline-block;font-size:14px;font-weight:700;color:#B21630;
+  background:var(--soft);padding:10px 17px;border-radius:13px;}
+.board{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px 18px 16px;
+  margin:0 22px;box-shadow:var(--sh);}
+.board svg{width:100%;max-width:264px;height:auto;display:block;margin:0 auto 14px;}
+.srow{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:12.5px;}
+.srow:last-child{margin-bottom:0;}
+.srow .sn{flex:0 0 58px;color:var(--t2);}
+.srow .sv{flex:0 0 42px;font-weight:800;color:var(--t1);text-align:right;
+  font-variant-numeric:tabular-nums;letter-spacing:-.3px;}
+.srow .st{flex:1;height:6px;background:#F0F0F3;border-radius:4px;overflow:hidden;}
+.srow .st i{display:block;height:100%;width:0;border-radius:4px;background:var(--grad);
+  transition:width .8s cubic-bezier(.22,1,.36,1);}
+.srow .sl{flex:0 0 78px;color:var(--t3);font-size:11px;text-align:right;}
+.sec{background:#fff;border:1px solid var(--line);border-radius:18px;
+  padding:20px 21px;margin:12px 22px 0;box-shadow:var(--sh);animation:in .5s cubic-bezier(.22,1,.36,1) both;}
+.sec-h{display:flex;align-items:center;gap:9px;margin-bottom:13px;}
+.sec-n{font-size:10.5px;font-weight:800;letter-spacing:.5px;color:#fff;background:var(--red);
+  border-radius:6px;padding:2.5px 6px;line-height:1.4;}
+.sec-h h3{font-size:14.5px;font-weight:800;letter-spacing:.1px;color:var(--t1);}
+.sec p{font-size:14px;color:var(--t2);line-height:1.9;margin-bottom:11px;}
+.sec p:last-child{margin-bottom:0;}
+.sec ul{margin:0;list-style:none;}
+.sec li{font-size:13.7px;color:var(--t2);line-height:1.86;margin-bottom:11px;
+  padding-left:16px;position:relative;}
+.sec li:last-child{margin-bottom:0;}
+.sec li::before{content:"";position:absolute;left:0;top:10.5px;width:5px;height:5px;border-radius:50%;background:#FFB3C0;}
+.sec li b{color:var(--t1);font-weight:700;}
+.sec .hi{color:var(--red);font-weight:800;}
+.sec.alt{background:var(--soft2);border-color:var(--soft);}
+.sec.alt li::before,.sec.alt p{color:var(--t2);}
+.sec.alt li::before{background:var(--red);}
+.sec .day{display:inline-block;min-width:52px;font-weight:800;color:var(--red);font-size:12.5px;}
+.rone{margin:12px 22px 0;border-radius:18px;padding:22px 21px;
+  background:linear-gradient(135deg,#FFF0F3,#FFF7F9);border:1px solid #FFD9E0;
+  animation:in .5s cubic-bezier(.22,1,.36,1) both;}
+.rone span{display:block;font-size:10.5px;font-weight:800;letter-spacing:2.5px;margin-bottom:10px;color:#C4213C;}
+.rone div{font-size:16.5px;font-weight:800;line-height:1.7;color:#8E1127;letter-spacing:-.2px;}
+.resbtns{display:flex;gap:10px;margin:22px 22px 0;}
+.resbtns .btn{padding:15px;font-size:15px;}
+.savenote{text-align:center;font-size:11.5px;color:var(--t3);margin:18px 22px 0;line-height:1.9;}
+.savenote em{font-style:normal;color:#C4213C;}
+
+@media(max-width:400px){
+  .intro-wrap h1{font-size:33px;}
+  .qtext{font-size:19.5px;}
+  .res-hero .code{font-size:39px;letter-spacing:8px;text-indent:8px;}
+  .opt .tx{font-size:14px;}
+  .sec{padding:18px 17px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ========== 锁屏 ========== -->
+<section id="lock" class="screen active">
+  <div class="lockbox" id="lockbox">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <div class="brand">心 动 物 种</div>
+    <h1>你是哪一种<br><em>恋爱物种</em>？</h1>
+    <div class="sub">请输入访问密码</div>
+    <div class="pwfield">
+      <input id="pw" type="password" placeholder="输入密码" autocomplete="off">
+      <span class="eye" id="eye">显示</span>
+    </div>
+    <div class="err" id="err">密码不对，再试一次</div>
+    <button class="btn btn-main" id="unlock">进入测试</button>
+    <div class="valid" id="validBox"></div>
+    <div class="locknote">
+      <b class="pt">使 用 须 知</b>
+      <ul id="noticeInline"></ul>
+      <div class="agree">点击「进入测试」即视为已知悉并同意以上条款</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 欢迎页 ========== -->
+<section id="intro" class="screen">
+  <div class="intro-wrap">
+    <div class="eyebrow"><i></i>恋爱人格图鉴 · 五维十六型</div>
+    <h1>你是哪一种<br><em>心动物种</em>？</h1>
+    <p class="desc">25 道情景题，测出你在关系里的真实样子——不是你以为的样子。答完会得到一张专属五维雷达图，和一份完整的自己。</p>
+    <div class="species">
+      <div class="sp"><b>金毛型</b><span>奔赴者</span></div>
+      <div class="sp"><b>猫型</b><span>掌控者</span></div>
+      <div class="sp"><b>小鹿型</b><span>守望者</span></div>
+      <div class="sp"><b>刺猬型</b><span>自护者</span></div>
+    </div>
+    <div class="stats">
+      <div class="cell"><b>25</b><span>道题</span></div>
+      <div class="cell"><b>4</b><span>个选项</span></div>
+      <div class="cell"><b>16</b><span>种人格</span></div>
+      <div class="cell"><b>6</b><span>分钟</span></div>
+    </div>
+    <div class="panel">
+      <b class="pt">答 题 前 请 读 一 遍</b>
+      <ul>
+        <li>每题四个选项，选最接近你的一项，不用选"最好"的那一项</li>
+        <li>凭第一反应作答，没有对错，也没有"更好"的人格</li>
+        <li>中途可以返回修改上一题</li>
+      </ul>
+    </div>
+    <div class="panel notice">
+      <b class="pt">使 用 须 知</b>
+      <ul id="noticeList"></ul>
+    </div>
+    <button class="btn btn-main" id="start">开始测试</button>
+  </div>
+</section>
+
+<!-- ========== 答题 ========== -->
+<section id="quiz" class="screen">
+  <div class="quiz-wrap">
+    <div class="qtop">
+      <div class="qrow">
+        <span class="cur"><b id="qcur">1</b><s> / 25</s></span>
+        <span class="cur" id="qpct">0%</span>
+      </div>
+      <div class="segs" id="segs"></div>
+    </div>
+    <div class="qmain">
+      <div class="qindex" id="qindex">Q 01</div>
+      <div class="qtext" id="qtext"></div>
+      <div id="qopts"></div>
+    </div>
+    <div class="qnav">
+      <button class="back" id="prev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        上一题
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 结果 ========== -->
+<section id="result" class="screen">
+  <div class="res-wrap">
+    <div class="res-hero">
+      <div class="tagline">你 的 恋 爱 物 种</div>
+      <div class="code" id="rcode"></div>
+      <div class="nm" id="rname"></div>
+      <div class="sb" id="rsub"></div>
+      <div class="sg" id="rslogan"></div>
+    </div>
+    <div class="board">
+      <svg id="radar" viewBox="0 0 300 262"></svg>
+      <div id="rdims"></div>
+    </div>
+    <div id="rcontent"></div>
+    <div class="rone" id="rone"><span>给 你 的 一 句 话</span><div></div></div>
+    <div class="resbtns"><button class="btn btn-gray" id="again">重新测一次</button></div>
+    <div class="savenote">长按截图保存你的结果<br><em>本页面不保存任何作答与结果，关闭即清空</em><br>仅供娱乐参考，不构成心理学诊断或咨询建议</div>
+  </div>
+</section>
+
+</div>
+
+<!-- ========== 设置弹层 ========== -->
+<div class="modal" id="setModal">
+  <div class="modalbox">
+    <h2>修改访问密码</h2>
+    <div class="msub">修改后立即在本机生效。<br>如需所有设备都用新密码，把下方哈希值替换文件里的 PWD_HASH。</div>
+    <label>当前密码</label><input id="oldPw" type="password" placeholder="输入当前密码" autocomplete="off">
+    <label>新密码</label><input id="newPw" type="password" placeholder="6 位以上，仅用字母数字符号" autocomplete="off">
+    <label>确认新密码</label><input id="newPw2" type="password" placeholder="再输入一次" autocomplete="off">
+    <div class="hint" id="setHint"></div>
+    <div id="hashWrap" style="display:none">
+      <label>新密码哈希（替换文件中的 PWD_HASH）</label>
+      <div class="hashout" id="hashOut"></div>
+    </div>
+    <div class="modalbtns">
+      <button class="btn btn-gray" id="setCancel">取消</button>
+      <button class="btn btn-main" id="setSave">保存</button>
+    </div>
+    <div class="modalbtns" style="margin-top:9px">
+      <button class="btn btn-gray" id="setReset" style="font-size:13px">清除本机密码覆盖（恢复文件默认）</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   心动物种 · 恋爱人格图鉴
+   ------------------------------------------------------------
+   本文件不含任何明文密码。
+   改密方式：解锁后点「修改密码」，用生成的哈希替换 PWD_HASH；
+             替换后所有设备统一使用新密码。
+   有效期：修改 PWD_VALID_DAYS（单位：天，0 表示不限制）。
+   ============================================================ */
+var PWD_HASH = "8f3efd588b007b5fbea8c02dc41019d8c3bd405f99d653bb899013bdcacc28dd";
+var PWD_VALID_DAYS = 3;               /* 密码有效期（天），自首次解锁起算；设为 0 = 不限制 */
+var LSK = "xindong_pwd_hash";
+
+/* ---------- 纯 JS SHA-256 ---------- */
+function sha256(ascii){
+  function rr(v,a){return (v>>>a)|(v<<(32-a));}
+  var mp=Math.pow, mw=mp(2,32), result='';
+  var words=[], bitLen=ascii.length*8;
+  var hash=sha256.h=sha256.h||[], k=sha256.k=sha256.k||[], pc=k.length;
+  var comp={};
+  for(var c=2; pc<64; c++){
+    if(!comp[c]){
+      for(var i=0;i<313;i+=c){comp[i]=c;}
+      hash[pc]=(mp(c,.5)*mw)|0;
+      k[pc++]=(mp(c,1/3)*mw)|0;
+    }
+  }
+  ascii+='\x80';
+  while(ascii.length%64-56) ascii+='\x00';
+  for(i=0;i<ascii.length;i++){
+    var j=ascii.charCodeAt(i);
+    if(j>>8) return '';
+    words[i>>2]|=j<<((3-i)%4)*8;
+  }
+  words[words.length]=(bitLen/mw)|0;
+  words[words.length]=bitLen;
+  for(j=0;j<words.length;){
+    var w=words.slice(j,j+=16), oldHash=hash;
+    hash=hash.slice(0,8);
+    for(i=0;i<64;i++){
+      var w15=w[i-15], w2=w[i-2], a=hash[0], e=hash[4];
+      var t1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+
+        (w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+
+          (rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      var t2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash=[(t1+t2)|0].concat(hash);
+      hash[4]=(hash[4]+t1)|0;
+    }
+    for(i=0;i<8;i++) hash[i]=(hash[i]+oldHash[i])|0;
+  }
+  for(i=0;i<8;i++){
+    for(j=3;j+1;j--){
+      var b=(hash[i]>>(j*8))&255;
+      result+=((b<16)?0:'')+b.toString(16);
+    }
+  }
+  return result;
+}
+function curHash(){ return localStorage.getItem(LSK) || PWD_HASH; }
+function checksum(s){ return sha256(s); }
+
+/* ---------- 数据 ---------- */
+var Q = [{"d":1,"w":1.1,"rev":false,"t":"你想约他出来。","o":["我不会主动开口，最多发条朋友圈让他自己看见","我会先找个由头聊两句，看他的反应再决定","我会直接问他这周末有没有空","我会把时间和地点定好，问他要不要一起"]},{"d":1,"w":0.9,"rev":true,"t":"关系停滞了一阵，气氛有点淡。","o":["我会主动把话挑明，问清楚我们到底怎么回事","我会找个轻松的话题，试探着把气氛带起来","我会先等等看，也许过几天他自己会动","我不会做什么，感情这种事勉强不来"]},{"d":1,"w":1.0,"rev":false,"t":"你看到一部很想和他一起看的电影。","o":["先记着，等他哪天提起再说","说一句“最近这部好像不错”，然后看他接不接","直接问他哪天有空，我来订票","订好票，把场次发给他，问他哪天方便"]},{"d":1,"w":1.2,"rev":true,"t":"你们闹别扭后，对话框安静了两天。","o":["我先发消息把关系拉回来，冷战太难受了","我发一句不咸不淡的话，给他一个台阶","我先不动，看他什么时候来找我","我不会先开口，该来的自然会来"]},{"d":1,"w":0.8,"rev":false,"t":"关于关系里的“下一步”——公开、见朋友、认真谈未来。","o":["我倾向于顺其自然，不太会主动提","我会找个合适的时机，轻轻带一下","我会直接问他，我们现在算什么","我会主动推进，把这件事摆到台面上说清楚"]},{"d":2,"w":0.9,"rev":true,"t":"他问你“你最近是不是不太开心”。","o":["我会直接说，藏不住，你一眼就能看出来","我会说一点，但不会全说，留个尾","我会说“没什么”，然后换个话题","我会说“没有啊”，并且确实不想让他知道"]},{"d":2,"w":1.1,"rev":false,"t":"关于自己的过去、家里的事、那些不太想提起的部分。","o":["这些我基本不会跟任何人讲","除非被问得很直接，我才会说一点","关系到位了我会讲，愿意让他知道","我会主动讲，让他了解完整的我"]},{"d":2,"w":1.0,"rev":true,"t":"他做了一件让你很感动的事。","o":["我会直接表达我的感动，甚至可能眼眶红","我会说声谢谢，让他知道我心里有数","我心里很满，但说不出口，只是笑笑","我通常不太表现出来，记在心里就好"]},{"d":2,"w":1.2,"rev":false,"t":"他直接问你“你有多喜欢我”。","o":["我会用玩笑挡过去，或者只答一半","我会说个大概，但不会把话说满","我会老实说，哪怕听起来有点傻","我会把心里想的全说出来，一点不藏"]},{"d":2,"w":0.8,"rev":true,"t":"你在关系里最舒服的状态是。","o":["什么都能说，不用斟酌，不用想措辞","大部分都能说，少数几件事自己消化","各自留一点空间，不用全部交底","各自保留，最亲近的人也不必什么都知道"]},{"d":3,"w":0.9,"rev":false,"t":"他随口说想吃某家店。","o":["我听完就过了，不会特意记着","我说“那下次一起去”，但不一定放心上","我记下来，找个机会提一下","我记下来，然后直接约时间带他去"]},{"d":3,"w":1.1,"rev":true,"t":"你们的时间安排冲突了。","o":["我会优先让着对方的节奏，我这边可以调","我会尽量找一个两全的办法","我先看这件事对我重不重要，再决定","我基本会先保住自己原有的安排"]},{"d":3,"w":1.2,"rev":false,"t":"关于付出。","o":["我会观察对方给了多少，再决定给多少","我会先付出一点，看对方的反应","我习惯先付出，不太会计较","我不太算，想给就给，给完也不记"]},{"d":3,"w":1.0,"rev":true,"t":"他需要你帮忙，但你今天状态真的很差。","o":["我还是会去，他需要我这件事更重要","我会去，但会让他知道我今天不太好","我会跟他说今天不行，改天一定到","我会先顾好自己，状态差的时候我帮不上忙"]},{"d":3,"w":0.8,"rev":false,"t":"关系里你更在意的是。","o":["我有没有保住自己","我们有没有找到平衡","我有没有给够","他有没有被我照顾到"]},{"d":4,"w":1.1,"rev":true,"t":"他今天回消息比平时慢，语气也短了。","o":["我会想很多，把那几句话反复看几遍","我会留意一下，但不会太往心里去","我觉得可能就是在忙，不太在意","我基本不会注意到这种差别"]},{"d":4,"w":1.2,"rev":false,"t":"他提了一句“我前女友以前也这样”。","o":["我听完就过去了，不会多想","我当时没什么感觉，过后可能想起来","我会有一点点不舒服，但不会表现出来","这句话我大概会记住很久"]},{"d":4,"w":1.0,"rev":true,"t":"你发出去的一条消息，他过了四个小时才回。","o":["这四个小时里我会反复想起这件事","我会时不时看一眼手机，有点在意","我知道他可能在忙，该干嘛干嘛","我根本没在意这件事"]},{"d":4,"w":0.9,"rev":false,"t":"关于对方的情绪变化。","o":["他不说我基本感觉不到","他表现得明显一点我才看得出来","一般能察觉到，但不会想太多","他哪怕只有一点点不对，我都能感觉到"]},{"d":4,"w":0.8,"rev":true,"t":"你们相处的时候，你更常处于。","o":["时刻在观察和解读他的状态","会留意他的反应，但不会一直盯着","比较放松，偶尔会琢磨一下","挺放松的，不太去想这些"]},{"d":5,"w":0.9,"rev":false,"t":"恋爱在你的生活里，占的比重是。","o":["是生活里很小的一块，我还有太多别的事","重要的一部分，但不是全部","占了挺大一块，很多安排会绕着它走","很大，我大部分时间都在想和它有关的事"]},{"d":5,"w":1.2,"rev":true,"t":"如果这段关系结束了，你需要多久才能回到正常。","o":["会很久，甚至影响其他事情的节奏","会难过一阵，需要点时间缓过来","会难过，但生活基本盘不会动","我大概很快就能继续往前"]},{"d":5,"w":1.0,"rev":false,"t":"你希望恋爱给你带来的是。","o":["一件让生活变得更好的事","一个可以一起往前走的人","生活中排在前面的那件事","一种被稳稳托住的重心"]},{"d":5,"w":1.1,"rev":true,"t":"关于“为了一段关系改变自己”。","o":["我愿意为了关系调整很多，包括一些习惯","我会调整，只要不是原则问题","我会调整，但有底线，不会大改","我不会为了谁改变自己，合得来就合"]},{"d":5,"w":0.8,"rev":false,"t":"闲下来的时候，你更常是。","o":["做自己的事，很少想起他","做自己的事，偶尔会想起他","有不少时候在想他","大部分空闲时间都在想他，或者做和他有关的事"]}];
+var TYPES = {"AOGS":{"n":"金毛型 · 灼","s":"主动 · 敞开 · 全情 · 敏感","g":"把心掏出来给，也真的会被疼到","you":["你是那种心意写在脸上的人。喜欢上一个人，你根本藏不住——会主动找话题、主动约、主动把对方的日程排在自己前面。你不觉得付出是件需要权衡的事，喜欢就是想把好的都给他。","但你也极度敏感。他今天回消息慢了半小时、句尾少了一个语气词、朋友圈发了张你看不懂的照片，这些别人根本不会注意的细节，都会在你脑子里转一整晚。你的热情和敏感其实是同一套系统的两端——你越投入，能被触动的地方就越多。"],"life":["你是关系里那个\"推着往前走\"的人。主动约、主动说、主动低头，连冷战都是你先结束——你受不了关系悬着的感觉，那比吵架本身更让你难受。你很难\"晾着\"一个人，因为晾着对方的同时，你自己也在被煎熬。","你给的比说出口的还多。你会记住他随口提过的想吃的店、想看的那部电影，然后在某个他没预料到的时刻兑现。你不太邀功，因为你觉得他应该能看见——而问题恰恰在于，他常常看不见。不是你做得不够，是你做得太自然了。"],"adv":["确定感。跟你在一起的人从来不用猜你的心思。这在当下的恋爱环境里是稀缺品，很多关系就是断在\"猜\"上。","行动力。你不只停在\"心动\"的层面，你会真的约、真的做、真的把关系往前推。很多关系能成，靠的就是你这一型。","情绪直给。你开心就是开心，不高兴就是不高兴。对方不需要解读你，你的沟通成本极低。"],"weak":["把付出当成安全感。你潜意识里相信\"我给得够多，他就不会走\"，于是不断加码。但付出换来的从来不是确定，只是你更离不开。","过度自省。一旦回应不足，你第一反应不是\"他最近怎么了\"，而是\"我是不是哪里不够好\"。这个归因方向是反的。","敏感放大了消耗。别人受一次的伤，你要在自己脑子里重播十次。同一件小事，你的情绪成本是别人的好几倍。"],"trap":["先低头的人永远先低头。你每次都主动结束冷战，久而久之对方会默认\"反正他会来\"。你在无声中把主动权全部让了出去。","用付出去换确定。关系不对等时你不会说，而是给更多——希望用更多付出来把对方拉回来。这是最容易被消耗的模式。","把\"我做的他都懂\"当成默认设置。你不说，他就真的不知道。你的很多委屈，其实源于一个从未被验证过的假设。"],"fit":["适合你的：情绪稳定、回应明确、不需要你反复确认的人。你需要的不是更多爱，而是更稳定的反馈——一个\"我说了他就会回应\"的人，能让你整个人松下来。","不适合你的：情绪起伏大、忽冷忽热、让你长期处在\"猜\"的状态里的人。跟这样的人在一起，你的敏感会被调到最大档，内耗成倍增长。你会误以为是自己不够好，其实只是你们不匹配。"],"tips":["保留一件\"不告诉他\"的事。不是隐瞒，是给自己留一块不被这段关系定义的空间，哪怕是每周一个下午的独处。","把期待说出口。停止指望他\"应该懂\"，改成直接说\"我做了这个，我希望你给我一点回应\"。你会发现大部分误会根本不成立。","建立\"付出对账\"习惯。每周问自己一次：这周我给的和得到的差多少？如果连续两周差值都在扩大，就该停下来调整，而不是继续加码。"],"den":"高浓度时你会把整颗心都押上去，甜和疼都被放大数倍；低浓度时你依然是主动的那个，但不会再为一条没回的消息失眠。","one":"你不缺爱人的能力，你缺的是一次被同样热烈回应。","tips5":["保留一件\"不告诉他\"的事。不是隐瞒，是给自己留一块不被这段关系定义的空间，哪怕是每周一个下午的独处。","把期待说出口。停止指望他\"应该懂\"，改成直接说\"我做了这个，我希望你给我一点回应\"。你会发现大部分误会根本不成立。","建立\"付出对账\"习惯。每周问自己一次：这周我给的和得到的差多少？如果连续两周差值都在扩大，就该停下来调整，而不是继续加码。","给情绪装一个延迟器。想发那句「你是不是不想理我了」的时候，先存草稿，等 30 分钟再决定。你的判断力在情绪峰值时是最低的。","把「我为你做了什么」说出来一次。不用邀功，只要陈述：「我今天特意去买了你上次说的那家面包。」让他有机会回应。"],"script":["当你想问「你是不是不爱我了」→ 改成：「我最近有点不安，想跟你确认一下我们还好吗。」","当你想说「算了，不用你管」→ 改成：「我现在有点情绪，等我缓一下我们再说，可以吗？」","当你想说「我为你做了这么多」→ 改成：「我今天做的那件事，其实是想让你开心，你注意到了吗？」"],"drill":["第 1 天：把他今天说过的一句话写下来，晚上复盘——这句话是真的针对你，还是你自己加了戏？","第 3 天：忍一次「主动低头」。让他先来，观察你实际的焦虑程度比预想的高还是低。","第 5 天：做一件只为自己开心的事，不告诉他。","第 7 天：说一次「我需要你」，练一次把需求直接讲出来。"]},"AOGC":{"n":"金毛型 · 朗","s":"主动 · 敞开 · 全情 · 钝感","g":"爱得直接，给得痛快，也不太内耗","you":["你是个心思很直的人。喜欢就说，想见就去，给出去的东西从不记账。你不擅长也不想玩暧昧拉扯，别人拐弯抹角的时候你会直接问\"所以你到底什么意思\"。这种直接不是粗，是你觉得绕来绕去太浪费精力。","你还有个别人羡慕不来的特质：情绪钝感。别人一句话的语气、一个微妙的表情，你基本读不出来，也不太在乎。这不是迟钝，是你本能地不想为这些小事消耗自己。所以你很少失眠，也很少因为一段对话反复回放。"],"life":["你是关系里最主动也最坦荡的那一个。你不搞欲擒故纵，喜欢一个人就是\"行不行，给个话\"。你的情绪来得快也去得快，从不隔夜——今天吵完，明天你就能正常说话。","你的投入是真实的，而且给得很大方。你会为了对方调整安排、花时间和钱，并且不觉得这是牺牲。你也确实不会在心里默默记账——但这也意味着，你容易忽略对方是不是正在用另一种方式记账。"],"adv":["情绪稳定。这是你最被低估的天赋。\"不被小事消耗\"是一种稀缺能力，很多人一辈子都学不会。","坦荡带来的安全感。你的话可信，你的态度明确，跟你在一起的人不需要揣摩你。","内耗极低。同样的挫折，别人要缓三天，你一顿饭就过去了。这让你在关系里更耐久。"],"weak":["你读不懂\"没说出口\"的部分。对方在等你察觉的时候，你还在等他直说——两个人就这样错过去了。","你的钝感会误伤敏感的人。你随口说的一句话、觉得没什么的一句评论，对方可能会记很久，而你完全不知道发生了什么。","你容易低估对方的情绪累积。等你意识到有问题时，对方可能已经忍了很久了。"],"trap":["把\"有话直说\"当成通用规则。对敏感型的人来说，很多话不会直说，沉默本身就是信息——而你会把它当成\"没事\"。","忽略对方的付出。你不记账，但对方可能记。你收到过的那些小心思，很多你根本没意识到发生过。","在关系里太快\"翻篇\"。你觉得吵完就过去了，但对方可能还需要被安抚。你的快速翻篇有时会被理解成\"你根本不在意\"。"],"fit":["适合你的：同样直接、或者愿意把话说清楚的人。跟一个让你猜的人在一起，你会彻底失灵——不是你不努力，是这套系统你本来就没有。","不适合你的：敏感、含蓄、习惯用暗示表达需求的人。跟这样的人在一起，你很累，他也委屈，双方都觉得对方\"不体谅\"。"],"tips":["每天留出五分钟\"读空气\"。不用变成敏感的人，只是多问一句\"你今天好像不太一样，怎么了\"。这一句能解决你八成的误伤。","把感谢说出口。你收到的好，别只在心里过一遍，直接告诉他\"我看到你做的这件事了\"。","吵架后不要立刻翻篇。确认一句\"你还有没有没说完的\"，再进入正常状态。"],"den":"高浓度时你会把生活节奏全部向他倾斜，但情绪依旧不内耗；低浓度时你给得照样痛快，只是随时能收回自己的重心。","one":"你的坦荡很珍贵，但偶尔停一下，看看对方没说出口的那部分。","tips5":["每天留出五分钟\"读空气\"。不用变成敏感的人，只是多问一句\"你今天好像不太一样，怎么了\"。这一句能解决你八成的误伤。","把感谢说出口。你收到的好，别只在心里过一遍，直接告诉他\"我看到你做的这件事了\"。","吵架后不要立刻翻篇。确认一句\"你还有没有没说完的\"，再进入正常状态。","每周问一次「你有没有什么没说出口的」。你的钝感会漏掉信号，所以要用提问去补，而不是靠感觉。","把对方的沉默当成信息。他不说，不代表没事，可能是在等你问。"],"script":["当你想问「怎么了？没事吧？」→ 改成：「你今天好像有点安静。」（前者逼他答「没事」，后者只是观察）","当你想说「那我这样弄行不行」→ 改成：「这件事你希望我怎么做？」（直接问需求，别猜）","当你察觉到不对但想装没看见 → 改成：「我刚才那句话是不是让你不舒服了？」"],"drill":["第 1 天：记录今天对方说的哪句话，你可能理解错了。","第 3 天：主动问一次「最近有没有什么想说的」，然后闭嘴听他讲完。","第 5 天：吵架后不立刻翻篇，先问一句「你还有没有没说完的」。","第 7 天：写下三件对方最近为你做的事，说给他听。"]},"AOHS":{"n":"金毛型 · 涌","s":"主动 · 敞开 · 克制 · 敏感","g":"说得热烈，心里其实一直留着退路","you":["你会主动、会表达，话说得也漂亮，是人群里那个\"会来事儿\"的人。但你心里一直有一杆秤——付出的每一步、退让的每一次，你都算得清。你不是小气，只是不愿意做那个单方面用力的人。","同时你又极其敏感。对方情绪稍微低一点、回复稍微慢一点，你立刻就能感知到。但奇怪的是，你几乎从不把这些感受说出口。所以你变成了一个\"表面最热、心里最清醒\"的组合。"],"life":["你看起来是这段关系里最主动热情的那个，实际上你是最清醒的那个。你享受主动带来的掌控感，但你不愿意先输——所以你会推进，但永远留一手。","你会给对方制造惊喜，也会在心里评估这些惊喜的回报。这不是算计，是你的自我保护机制。你在感情里不太允许自己完全失控，哪怕在最浓的时候。"],"adv":["进退有度。你既能把关系推起来，又不会把自己耗空。很少有人能同时具备这两种能力。","观察力强。你看人很准，对方的真实状态很难瞒过你。这让你在关系早期就能判断值不值得投入。","体面。无论关系怎么走，你都能保持分寸，不太会做出让自己后悔的事。"],"weak":["你的\"热烈\"和\"保留\"是矛盾的。对方接收到的信号不一致，很容易解读成\"他是不是在玩我\"。","你从不表达不满。因为你追求体面，所以所有的委屈都被自己消化了——消化不掉，就变成了距离感。","你很难真正放松。即使遇到很好的人，你也会下意识地留着那一步退路，结果是对方永远差一点点够到你。"],"trap":["用\"我表现得很好\"代替\"我大概可以信他\"。你维持着完美的关系表现，但心里从未真正交付。","把评估当成常态。长期处在\"我在观察他\"的位置上，会让对方始终感觉没有被信任。","不表达不满的累积。你以为不说是不想吵架，对方接收到的却是\"他一点都不介意\"。"],"fit":["适合你的：足够坦诚、让你没法也不需要算计的人。一个把话说在明面上的人，会让你慢慢放下那杆秤。","不适合你的：同样会留一手、同样在观察你的人。两个人都在评估，关系会一直悬在半空中，谁也落不了地。"],"tips":["试着说一次\"我今天其实不太开心\"。你会发现坦白并没有让你失去什么。","把评估转成提问。不确定就直接问，比在心里推演十遍有效率得多。","给自己设一个\"交付额度\"。比如三个月内允许自己在某件事上完全不设防，看看结果会不会比预想的好。"],"den":"高浓度时你会算得更细，因为你输不起；低浓度时你反而更松弛，那些试探和评估会明显减少。","one":"你不是不够爱，你只是还没遇到一个让你不用算的人。","tips5":["试着说一次\"我今天其实不太开心\"。你会发现坦白并没有让你失去什么。","把评估转成提问。不确定就直接问，比在心里推演十遍有效率得多。","给自己设一个\"交付额度\"。比如三个月内允许自己在某件事上完全不设防，看看结果会不会比预想的好。","把「评估」变成「提问」。你在心里推演十遍，不如直接问一句。","每个月做一次「完全交付」：挑一件小事，允许自己完全不设防、不留退路，看看结果会不会比预想的好。"],"script":["当你想说「没事」→ 改成：「我今天有点不太开心。」","当你想继续装作无所谓 → 改成：「我其实挺在意这件事的。」","当你什么都自己扛的时候 → 改成：「我需要你帮我个忙。」"],"drill":["第 1 天：说一次真实的不满，不加修饰。","第 3 天：把一次「想给但没给」的付出真的给出去，不评估回报。","第 5 天：主动说一次「我想你了」。","第 7 天：复盘这一周，哪一次你其实想靠近，但选择了保留？"]},"AOHC":{"n":"金毛型 · 淡","s":"主动 · 敞开 · 克制 · 钝感","g":"热情主动，但关系绑不住你","you":["你能主动、能表达、能把关系往前推，但你始终留着一块地方不交出去。你喜欢一个人是真的，但你的生活不会因为这份喜欢而整体倾斜。你有自己的节奏、自己的朋友、自己必须做的事。","关系里的小情绪基本影响不到你。对方语气不对、回消息晚了，你注意到了，但不会往心里放。你有种\"睡一觉就好了\"的能力，很多人求都求不来。"],"life":["你是关系里最有底气的那个。你爱得主动但不纠缠，给得大方但有上限。你不会因为对方没有及时回应就心态波动，也不太会做出冲动的事。","你的松弛感是真实的，但也带来副作用——对方常常不确定你到底有多在意。他能感受到你的好，但很难感受到\"非他不可\"。"],"adv":["情绪独立。你的快乐不只来自这段关系，所以你在关系里很稳，也很少受伤。","边界清晰。你知道自己能给什么、不能给什么，不容易被推着走。","长期相处的舒适度极高。没有控制、没有索取、没有情绪绑架，跟你在一起很轻松。"],"weak":["你的\"不在意\"容易被误读成\"不上心\"。对方会觉得你爱得有分寸感，但浓度不够。","你不太会表达需求。因为你能自己消化，所以你几乎不开口要东西——但这会让对方失去\"被需要\"的感觉。","你有时会低估对方的情感需求。对你来说\"这没什么\"，对他来说可能是整晚的辗转。"],"trap":["用\"我很独立\"回避深度亲密。独立是能力，但如果从不允许自己依赖别人，关系就永远停在浅层。","不给对方\"被需要\"的机会。关系里的联结感，很大程度来自\"我能为你做点什么\"。","把对方的情绪反应当成小题大做。你的承受力偏高，容易无意中否定对方的感受。"],"fit":["适合你的：同样有自己世界、不需要高频确认的人。两个人都各自精彩，反而能走得最久。","不适合你的：需要强确认、情感需求密集的人。你会觉得被消耗，他会觉得被冷落，双方都在委屈。"],"tips":["每周至少说一次具体的需要。比如\"这周我想见你\"，让对方知道他在你生活里的位置。","允许自己有一次\"不那么酷\"。想他就说想他，不需要用\"随便啊\"来维持从容。","主动制造一次依赖。请他帮一个你其实能自己解决的忙——这对你的关系比你想的更有用。"],"den":"高浓度时你会破例让关系挤进你的计划；低浓度时你依旧主动，只是这段关系很难真正改变你的节奏。","one":"你爱得有分寸，这不是缺点——只是记得，把你的在意也说出口。","tips5":["每周至少说一次具体的需要。比如\"这周我想见你\"，让对方知道他在你生活里的位置。","允许自己有一次\"不那么酷\"。想他就说想他，不需要用\"随便啊\"来维持从容。","主动制造一次依赖。请他帮一个你其实能自己解决的忙——这对你的关系比你想的更有用。","每周说一次具体需求。不是「随便」，是「我想吃这个」。","让对方帮你一次忙。关系里的联结感，很大程度来自「我能为你做点什么」。"],"script":["当你想说「你什么时候有空都行」→ 改成：「这周我想见你。」","当你准备自己拍板的时候 → 改成：「这件事我想听你的意见。」","当你什么都不会说的时候 → 改成：「我今天有点想你了。」"],"drill":["第 1 天：主动提一个具体的安排（时间 + 地点），不要开放式提问。","第 3 天：请对方帮一个你其实能自己搞定的忙。","第 5 天：做一次「不那么酷」的表达。","第 7 天：把对方最近的情绪变化说出来，验证一下你平时漏掉了多少。"]},"ADGS":{"n":"猫型 · 灼","s":"主动 · 防御 · 全情 · 敏感","g":"主动靠近，却比谁都怕被辜负","you":["你会主动靠近，但每一步都留着退路。你会先找个理由聊天、先制造一次偶遇，但你绝不会先说出\"我喜欢你\"。你把主动权用在\"接近\"上，而不是\"表白\"上——因为接近可以随时收回，表白不能。","可同时，你又是投入最深的那个人。你会默默记下他的所有细节，会在他喊累的时候想办法让他轻松一点，会为他推掉自己的安排。只是这一切你都不说。而你对关系的感知又极其敏锐，他态度的一点变化，你比谁都先知道。"],"life":["你看起来洒脱、不粘人、甚至有点冷淡，实际上你是关系里投入最深、也最不敢承认的那个。你会默默为对方做很多事，但从不让对方知道你做了——你怕被看穿，也怕被辜负。","你有一个固定的行为模式：试探。你会用一件小事制造一次机会，看他接不接；会故意冷淡两天，看他在不在意。你不觉得这是游戏，你只是在确认安全。"],"adv":["双线能力。你既能主动推进关系，又保住了自我的体面。\"能靠近也能退开\"这种能力很少见。","深度投入但不索取。你给的很多，而且不要回报——只是对方常常不知道你给了。","洞察力强。你能在对方开口之前就知道他的状态，这让你在关系里几乎从不被动。"],"weak":["付出得多、说得少。最后容易变成\"我明明做了那么多，他什么都没感觉到\"。","试探会消耗关系。你每冷一次，对方的耐心就少一分，而你还在等他是\"真的在意\"。","你很难承认自己的期待。你希望他主动，但你从不告诉他你希望他主动。"],"trap":["用冷淡测试真心。测试是有成本的，而且大多数人经不起反复测试——不是不爱你，是累了。","把付出藏起来。你不说，他就真的不知道。你以为的\"他应该感觉到\"，其实从未发生。","主动接近却不肯先开口。你把自己放在了一个\"永远差一步\"的位置上，时间久了就是错过。"],"fit":["适合你的：敏锐、能读懂沉默、不需要你把话说满的人。他得看得见你没说出来的那部分——这对你来说几乎是唯一能松口气的配置。","不适合你的：同样不表达、同样需要对方先开口的人。两个人都把话憋着，关系会在沉默里慢慢凉掉。"],"tips":["每周做一次\"可见的付出\"。不要藏着，把他能看到的照顾好，让他有机会回应你。","把测试换成提问。\"你最近是不是有点忙？\"比冷他两天有效十倍。","允许自己先说一次。不一定要说\"我喜欢你\"，可以说\"我最近挺想见你的\"。这已经足够。"],"den":"高浓度时你的试探会变本加厉，因为你太怕失去；低浓度时你能真正放松，不再用冷淡去验证对方。","one":"你的深情藏得太深，深到有时候连你自己都以为是冷淡。","tips5":["每周做一次\"可见的付出\"。不要藏着，把他能看到的照顾好，让他有机会回应你。","把测试换成提问。\"你最近是不是有点忙？\"比冷他两天有效十倍。","允许自己先说一次。不一定要说\"我喜欢你\"，可以说\"我最近挺想见你的\"。这已经足够。","把付出做成「看得见」的。不邀功，但要让对方知道你做了什么。","停止用冷淡测试人。一次测试的成本，可能是一次真实的失去。"],"script":["当你等他开口的时候 → 改成：「我最近挺想见你的。」","当你默默做了一件事的时候 → 改成：「你上次说的那家店，我订好了。」","当你想冷处理的时候 → 改成：「我有点在意你和别人的关系。」"],"drill":["第 1 天：今天不做任何「试探」动作，观察你有多想这么做。","第 3 天：把一件你原本会藏起来的好意，直接告诉对方。","第 5 天：主动约一次，不给退路（把时间定好）。","第 7 天：写下三条「我以为他知道，但他其实不知道」的事。"]},"ADGC":{"n":"猫型 · 朗","s":"主动 · 防御 · 全情 · 钝感","g":"不怎么说，但一次比一次给得实","you":["你话不多，也不太表达情绪，但你会用行动给答案——他随口提过的东西你会买，他需要的时候你会到，他遇到麻烦你比他自己还上心。你觉得\"做\"比\"说\"实在得多。","你不太会被小事影响。他语气不对、回消息慢了，你注意到了但不会往心里去。你的情绪很稳，很少因为关系失眠，也不太琢磨别人话里的弦外之音。"],"life":["你是\"少说多做\"的类型。表面看着不好接近，实际上你早就把这个人规划进了自己的生活，只是从来不宣布。你不太会说甜言蜜语，但你会把他的事当自己的事。","你的爱是稳定的、可预期的。你不太会忽冷忽热，也不太会情绪化。跟你在一起的人，久了会非常依赖这种稳定。"],"adv":["可靠。你答应的事都会做到，你做出来的承诺比说出来的可信得多。","稳定。你很少情绪化，是关系里那个\"不会塌\"的人。","不折腾。你没有控制欲，不查岗、不试探，给对方很大的空间。"],"weak":["你的行动对方不一定看得懂。你不解释，对方很容易以为你不在意。","你的情感表达\"低输出\"。会让需要情绪反馈的人长期处在饥渴状态。","你不太会处理情绪冲突。对方倾诉时你容易直接给解决方案，而他要的其实是被理解。"],"trap":["把行动当成唯一的语言。行动是重要的，但对方也需要听到确认，这不是矫情。","用理性回应情绪。他难过的时候你开始分析问题，他会觉得\"你根本不懂我\"。","沉默地累积不满。你不吵不闹，但会在心里默默记账，到某个点突然就凉了。"],"fit":["适合你的：能看见实际行动、不要求太多情绪表达的人。他信你做出来的事，而不是你说的话。","不适合你的：需要高频情绪确认的人。你给不了那种密度，他也会一直觉得缺了什么。"],"tips":["每周说一句直白的感受。\"跟你待着挺舒服的\"这种程度就够了。","对方倾诉时，先回应情绪再解决问题。先说\"这确实挺烦的\"，比给方案有用。","有不满就说出来。不要等到忍不住的那天一次性爆发。"],"den":"高浓度时你会默默把很多事扛过来，但依然不擅长说出口；低浓度时你的付出更像随手帮忙，不带牵挂。","one":"你的爱都在行动里，但偶尔说一句，也好让人确认一下。","tips5":["每周说一句直白的感受。\"跟你待着挺舒服的\"这种程度就够了。","对方倾诉时，先回应情绪再解决问题。先说\"这确实挺烦的\"，比给方案有用。","有不满就说出来。不要等到忍不住的那天一次性爆发。","每周说一句感受，哪怕是「今天心情不错」这种程度。","对方倾诉时先回应情绪，再解决问题——先讲「这确实挺烦的」。"],"script":["当你想什么都不说的时候 → 改成：「跟你待着挺舒服的。」","当你想直接给解决方案的时候 → 改成：「这确实挺烦的。」","当你想自己扛的时候 → 改成：「我今天有点累，想跟你待一会。」"],"drill":["第 1 天：说一句直白的感受。","第 3 天：对方说烦恼时，只说「这确实挺烦的」，不给任何建议。","第 5 天：主动报备一次行程，不为别的，只是让他知道。","第 7 天：写下一件你为他做、但他不知道的事，然后说出来。"]},"ADHS":{"n":"猫型 · 涌","s":"主动 · 防御 · 克制 · 敏感","g":"表面云淡风轻，心里早已翻涌","you":["你会主动，但你从不表态；你克制，却极其敏感。别人发的每一条动态、每一次回复的快慢、聊天里每一个突兀的句号，你都会在心里过一遍——然后什么都不说。","你的内心戏极其丰富，但呈现出来的只有一个平静的表面。你不缺感受，你缺的是把感受往外递的动作。这对你来说很难，因为\"说出来\"意味着让别人有了伤害你的把柄。"],"life":["你是关系里最难被看穿的那个。你退一步不是不在乎，是太在乎；你不说不是没感觉，是怕说出来就被拿捏。你把所有的情绪都处理在自己心里。","你会控制节奏——不秒回、不主动提要求、不表达情绪波动。这不是冷淡，这是你保护自己的方式。可对方接收到的信息就是\"他好像没那么在意\"。"],"adv":["清醒。你几乎不会在关系里失控，任何时候都知道自己在做什么。","边界感强。你不太会被别人影响，也不太会被人拿捏。","观察力极强。你能从细节里读出很多东西，判断往往很准。"],"weak":["内耗的成本全由你自己承担。表面越平静，心里的戏越多，最后累的是你。","你很难被安慰。因为你不说，别人根本不知道你需要安慰。","你会把\"没有回应\"自动解读成负面信号。他不回你可能只是在忙，但在你脑子里已经推演完了。"],"trap":["用沉默处理一切。包括误会、包括不满、包括喜欢。沉默解决不了任何问题，只会让问题沉淀。","把\"不表达\"当成熟。真正的成熟是知道什么时候该说，而不是永远不说。","独自消化情绪。你的难受别人看不到，所以也永远不会有人主动来帮你。"],"fit":["适合你的：稳定、直接、不需要你猜来猜去的人。他替你把话问出来，你才能松一口气。","不适合你的：同样需要你主动表达的人。你不用开口，他也就不用靠近，两个人会一直在原地。"],"tips":["从\"说事实\"开始，而不是\"说感受\"。\"我今天有点累\"比\"我很难过\"容易出口得多。","停止在心里推演。有疑问就直接问，你会发现九成的剧本都是自己写的。","找一个可以倾倒的人。哪怕不是恋人，也需要一个能让你说出内心戏的对象。"],"den":"高浓度时你的内心戏会成倍增长，表面却更平静；低浓度时你能真正做到不放在心上，而不是假装不在意。","one":"你不需要变得话多，只需要允许自己诚实地难受一次。","tips5":["从\"说事实\"开始，而不是\"说感受\"。\"我今天有点累\"比\"我很难过\"容易出口得多。","停止在心里推演。有疑问就直接问，你会发现九成的剧本都是自己写的。","找一个可以倾倒的人。哪怕不是恋人，也需要一个能让你说出内心戏的对象。","从「说事实」开始练，先不说感受。说「我今天有点累」比「我很难过」容易出口得多。","停止在心里推演。有疑问直接问，你会发现九成剧本是自己写的。"],"script":["当你想默默揣测的时候 → 改成：「你今天有点安静，是累了吗？」","当你想直接消失的时候 → 改成：「我需要一点自己的时间。」","当你反复回想一句话的时候 → 改成：「我刚才是不是想多了？」"],"drill":["第 1 天：整天不做任何内心推演，一有不确定就去问。","第 3 天：说一次「我今天有点累」。","第 5 天：主动表达一次不满，而不是冷处理。","第 7 天：复盘这一周的内心戏，哪一件后来被证明是想多了？"]},"ADHC":{"n":"猫型 · 淡","s":"主动 · 防御 · 克制 · 钝感","g":"主动、克制、不纠缠，最懂保护自己","you":["你能进能退，话不说满、心也不交全。你知道怎么开始，也知道怎么结束。你对关系的边界感极强，别人越过那条线你会立刻察觉，并且拉回来。","你对情绪波动不太敏感，也不太爱琢磨。别人做什么你都能平静接受，不太会因此失眠或反复回想。你的情绪很\"耐用\"。"],"life":["你是关系里最有掌控感的那一个。你想推进就推进，想抽身也能干脆利落地走。你几乎不会因为一段关系失控。","你不太会有\"非他不可\"的时刻。喜欢是真的，但你的生活里有太多同样重要的东西，所以任何一段关系都很难真正撼动你。"],"adv":["情绪独立。你不会把快乐寄托在别人身上，这让你在任何关系里都能保持体面。","自我保护能力强。你很少会在一段关系里受伤太久。","判断清晰。你能很快判断一段关系值不值得，并果断做出决定。"],"weak":["你的\"淡\"有时会让真正在意你的人觉得，自己在独自用力。","你很难让渡控制权。而亲密关系的本质，恰恰是某种程度的失控。","你不太会有\"为你破例\"的时刻。对方容易觉得始终没走进你的核心。"],"trap":["用抽身能力代替投入能力。有退路不等于关系稳定，只等于你随时准备离开。","把\"不被影响\"当成优势。它让你安全，也让你离深度的亲密很远。","冷处理代替沟通。你不太吵，但你的疏远本身就是惩罚，对方会感到被冷暴力。"],"fit":["适合你的：同样独立、不依赖情绪回应的人。两个人都懂距离，反而靠得最久。","不适合你的：情感需求强、需要被放在第一位的人。他会长期觉得自己在向一堵墙表达爱。"],"tips":["试着让渡一次控制。允许对方决定一次你原本会自己决定的事。","在关系里主动一次\"不理性\"。想见就立刻去，不用先权衡。","把疏远换成说明。想退开的时候说一句\"我需要一点自己的时间\"，比直接消失好得多。"],"den":"高浓度时你会开始让渡一点控制权；低浓度时你几乎不会为这段关系改变任何计划。","one":"你的清醒是优势，但别让它替你拒绝所有靠得很近的人。","tips5":["试着让渡一次控制。允许对方决定一次你原本会自己决定的事。","在关系里主动一次\"不理性\"。想见就立刻去，不用先权衡。","把疏远换成说明。想退开的时候说一句\"我需要一点自己的时间\"，比直接消失好得多。","每个季度让渡一次控制权，允许对方决定一件你原本会自己决定的事。","把「疏远」换成「说明」。想退开的时候说一句「我需要一点自己的时间」，比直接消失好得多。"],"script":["当你想直接不回的时候 → 改成：「我需要一点自己的时间，晚点找你。」","当你想全部自己定的时候 → 改成：「这件事你来定，我都行。」","当你觉得关系淡了但不想提的时候 → 改成：「我们最近好像有点远了。」"],"drill":["第 1 天：让对方决定一次今天的安排，全程不干预。","第 3 天：做一件「不理性」的事——想见就立刻去，不用先权衡。","第 5 天：主动说一次「今天想见你」。","第 7 天：回看这一周，你有几次想靠近，但因为「没必要」没动？"]},"POGS":{"n":"小鹿型 · 灼","s":"被动 · 敞开 · 全情 · 敏感","g":"一句不说，却把整颗心递了出去","you":["你很少主动，但你的情绪全写在脸上，只是自己以为藏得很好。你会因为一条没回的消息失眠，会把他随口的一句话记很久，会在他需要的时候默默把自己能给的都给了。","你的感受是被放大的。别人觉得\"就一句话\"，你能从这句话里读出一整套情绪。你的共情能力很强，但代价是你几乎无法\"不在意\"——同一件事，别人过去就过去了，你要缓很久。"],"life":["你总是那个\"等\"的人。等他先开口、等他先靠近、等他先发现——其实你一直都在，只是他可能从没注意到。","你的付出是安静的、不索取的。你会默默调整自己的安排去配合他，会在他说累的时候什么也不说地把事情做完，然后什么都不提。你觉得\"他应该能感受到\"，但他常常感受不到。"],"adv":["共情力极强。你能察觉到别人自己都没注意到的情绪，被你认真对待的人会被照顾得非常好。","真诚。你的感情里没有技巧，全是真东西。这在当下很稀缺。","细腻。你能记住的那些细节，恰恰是关系里最珍贵的部分。"],"weak":["你的付出是\"沉默的成本\"。给得很多，但对方可能根本不知道。","敏感让你在等待里反复受伤。同一个信号，你能解读出十种可能，而每一种都让你难受。","你不主动，所以人生里有很多\"如果当时……\"。"],"trap":["用等待代替表达。你以为等得够久他就会来，但大多数人根本不知道你在等。","把付出当成暗号。你不说，他就永远不会知道你做了什么。","在脑内完成整段关系。你在想象里已经走了很远，现实里你们可能还没开始。"],"fit":["适合你的：主动、稳定、愿意先走一步的人。他先开口，你才敢松手给——这不是你怯懦，这是你的启动方式。","不适合你的：同样被动、同样在等的人。两个人都在等对方开口，最后等来的是各自的遗憾。"],"tips":["给自己设一个\"三天规则\"。想联系他但三天都没动，就直接发一条，不用想好措辞。","把付出改成可见的。做完之后说一句\"我帮你弄好了\"，不需要邀功，只是让他知道。","找一个出口。把心里话先写在备忘录里，写完再决定要不要发——至少能减轻一半内耗。"],"den":"高浓度时你的等待会变成消耗，一句冷淡能让你难受好几天；低浓度时你依然温柔，但不会把自己熬空。","one":"你的温柔是稀缺品，别让它在等待里过期。","tips5":["给自己设一个\"三天规则\"。想联系他但三天都没动，就直接发一条，不用想好措辞。","把付出改成可见的。做完之后说一句\"我帮你弄好了\"，不需要邀功，只是让他知道。","找一个出口。把心里话先写在备忘录里，写完再决定要不要发——至少能减轻一半内耗。","给自己一个「三天规则」：想联系他但三天都没动，就直接发，不用想好措辞。","把付出改成可见的。做完之后说一句「我帮你弄好了」，不需要邀功，只是让他知道。"],"script":["当你想发朋友圈暗示的时候 → 改成直接发一条消息：「今天想你了。」","当你把话憋在心里的时候 → 改成：「我有件事想跟你说。」","当你自己难过的时候 → 改成：「你今天是不是不开心？」（把观察说出来）"],"drill":["第 1 天：主动发一条消息，不发朋友圈暗示。","第 3 天：做一件为他好的事，并且告诉他你做了。","第 5 天：说一次真实的情绪，不用「我没事」。","第 7 天：复盘这一周，你有几次「想说但没说」的时刻？"]},"POGC":{"n":"小鹿型 · 朗","s":"被动 · 敞开 · 全情 · 钝感","g":"安静，但给得踏实，不太自苦","you":["你不太主动，但你不藏情绪，笑起来是真的开心，不高兴也写在脸上。你愿意为对方做很多事，但不太会因为一句话反复纠结——睡一觉就好了。","你有种天然的自愈能力。别人的情绪波动在你这里会被很快消化，你不记仇，也不太会把不开心存起来。"],"life":["你是关系里最舒服的那种存在——稳定、真诚、不折腾。你给的关心很实在，从不表演，也从不索取回音。","你被动，但你的被动不是冷淡。你只是不擅长开场，一旦关系建立，你会是全情投入的那一方。问题在于，关系往往卡在\"开场\"那一步。"],"adv":["既温柔又不内耗。你是少见的\"低维护成本\"伴侣类型，相处起来毫无压力。","情绪自愈。你不积累负面情绪，关系里很少出现翻旧账。","踏实。你给的东西都是实的，没有什么表演成分。"],"weak":["你太被动。容易被更主动的人带走节奏，也容易在人群里被忽略。","你的好需要时间才能被看见。但在快节奏的社交环境里，很多人没有那个耐心。","你不太争取。即使很喜欢，你也不太会表达\"我想要\"，于是常常被别人先一步。"],"trap":["把\"顺其自然\"当成策略。顺其自然的结果，通常是\"什么都不发生\"。","不表达想要。你不说，对方就默认你都可以，最后你被安排到一个自己并不满意的位置上。","太容易被\"喂养\"。因为你不争，你容易被更强势的人牵着走。"],"fit":["适合你的：主动、直接、会把你带出来的人。你需要有人替你走第一步，然后你会给他全世界。","不适合你的：同样被动、需要你先示好的人。两个人都等，就永远开始不了。"],"tips":["每段新关系里，主动发起一次邀约。只要一次，就足以改变走向。","把\"都可以\"换成\"我想要这个\"。这是一个很小的语言替换，但会改变别人对你的处理方式。","记录自己被忽略的时刻。不是记仇，是提醒自己在关键节点上要发声。"],"den":"高浓度时你会把对方的事当成自己的事，但情绪依然稳定；低浓度时你依旧真诚，只是不会主动往前凑。","one":"你不需要改变安静，但值得被人先发现。","tips5":["每段新关系里，主动发起一次邀约。只要一次，就足以改变走向。","把\"都可以\"换成\"我想要这个\"。这是一个很小的语言替换，但会改变别人对你的处理方式。","记录自己被忽略的时刻。不是记仇，是提醒自己在关键节点上要发声。","每段新关系里，主动发起一次邀约。只要一次，就足以改变走向。","把「都可以」换成「我想要这个」。"],"script":["当你等他约你的时候 → 改成：「这周末要不要一起去做点什么？」","当你说「随便」的时候 → 改成：「我更想吃那个。」","当你自己消化的时候 → 改成：「你刚才那句话我有点在意。」"],"drill":["第 1 天：主动发起一次邀约。","第 3 天：在至少三件事上给出明确偏好，不说「都行」。","第 5 天：把一次「被安排」换成「我来定」。","第 7 天：写下一件你其实想要、但没开口的事。"]},"POHS":{"n":"小鹿型 · 涌","s":"被动 · 敞开 · 克制 · 敏感","g":"越不说，心里越满，也越难熬","you":["你情绪外露，但表达得很含蓄；你投入有分寸，却对每个细节都敏感。你会把想说的话在心里排练很多遍，最后只发出去一句\"嗯\"。","你的感受是浓的，但你的行动是小的。你在内心已经把这段关系推演了完整的一遍，从相识到分开，而现实里你连一句真实想法都没说出口。"],"life":["你是关系里最纠结的那个。想靠近怕打扰，想退出又舍不得，于是长期停在原地。你把所有能量都用在了\"想\"上面。","你不会主动，也不会完全放手。你维持着一种\"随时可以退出\"的姿态，但其实你比谁都不想退。这种矛盾会持续消耗你。"],"adv":["细腻、体贴。你非常懂得照顾别人的感受，你的关心很少有人比得上。","分寸感好。你不会给人压力，也不太会做出让人为难的事。","感知力强。你对关系的变化很敏锐，能提前察觉问题。"],"weak":["能量都消耗在内心戏里，行动几乎为零。","你会把\"没做\"当成\"不敢做\"的借口。长期下来会形成一种习惯性的退缩。","你几乎不表达需求。所以你的需求永远不被满足。"],"trap":["用\"再等等\"拖延所有决定。等到最后，选项会自己消失。","把克制当成熟。真正的成熟是知道什么时候该给，而不是永远只给三分。","用暗示代替表达。你以为他应该懂，但暗示的成功率极低。"],"fit":["适合你的：能替你把话问出来的人。他不用你开口，就能把你从原地拉出来。","不适合你的：同样含蓄、同样需要被推动的人。两个人都停在原地，只能互相观望。"],"tips":["设一个\"表达额度\"。每周至少主动说一次真实想法，哪怕只有一句。","把暗示改成一个具体问题。\"你这周末有安排吗\"比\"最近好像有点无聊\"有效得多。","允许自己被拒绝一次。你会发现被拒绝的痛，远小于一直不说的消耗。"],"den":"高浓度时你的内心戏会拖垮行动力，越在意越不敢动；低浓度时你反而更容易迈出那一步。","one":"你不是不够勇敢，你只是把所有的勇敢都用在了克制上。","tips5":["设一个\"表达额度\"。每周至少主动说一次真实想法，哪怕只有一句。","把暗示改成一个具体问题。\"你这周末有安排吗\"比\"最近好像有点无聊\"有效得多。","允许自己被拒绝一次。你会发现被拒绝的痛，远小于一直不说的消耗。","设一个「表达额度」：每周至少主动说一次真实想法，哪怕只有一句。","把暗示换成具体问题。「你这周末有安排吗」比「最近好像有点无聊」有效得多。"],"script":["当你用暗示的时候 → 改成：「你这周末有安排吗？」","当你反复猜测关系状态的时候 → 改成：「我有点想知道，我们算什么。」","当你永远不说的时候 → 改成：「我其实挺在意你的。」"],"drill":["第 1 天：把一次暗示改成一个直接的问题。","第 3 天：说一次真实想法，不用「嗯」回复。","第 5 天：提一个明确的请求，允许自己被拒绝一次。","第 7 天：复盘你这一周有多少能量花在「想」而不是「做」上。"]},"POHC":{"n":"小鹿型 · 淡","s":"被动 · 敞开 · 克制 · 钝感","g":"安静地喜欢，也安静地保全自己","you":["你不主动，但也不拧巴。你会表达，但不交底；会给，但总有余量。关系里的小波动基本影响不到你。","你有一种很独特的松弛——不焦虑、不追问、不强求。即使对方很久没回应，你也不太会有情绪波动，因为你的生活里还有别的重心。"],"life":["你是关系里最\"松\"的那一个。喜欢是真的，但不会为谁打乱自己的生活节奏。你从不追问，也从不强求。","你的加入让关系变得很轻松，但也让关系变得\"没那么紧绷\"。有些人需要张力来确认爱意，而你给不了这种张力。"],"adv":["情绪稳定、边界清晰。长期相处非常舒服。","你不给压力，也不索取情绪价值。这在亲密关系里是稀缺的。","独立。你有自己的生活系统，不会因为关系的变化而崩塌。"],"weak":["太\"松\"容易让对方怀疑你的在意程度。","你容易被推着走。因为你不争，别人就默认你都同意。","你的低波动容易被理解为\"没那么喜欢\"。"],"trap":["用平静掩盖不在意。有时候你不是不在意，只是不表达——但对方分不出这两者的区别。","从不主动争取。你的喜欢没有攻击性，所以常常输给更主动的人。","接受所有安排。你不反对，于是被安排到一个自己并不满意的位置。"],"fit":["适合你的：主动但尊重边界的人。他愿意走近，但不会把你逼到墙角。","不适合你的：需要情绪张力、需要被反复确认的人。他会觉得和你之间总隔着一层。"],"tips":["每两周主动推进一次关系。不需要大动作，一次邀约就够。","把\"我都可以\"换成\"我更想要这个\"。这会让人重新评估你的分量。","在关键节点上把在意说出口。不用天天说，但重要的时候要说。"],"den":"高浓度时你会多主动几次；低浓度时你几乎不争，关系走不走全看对方。","one":"你的平静很难得，但别让平静变成一种错过。","tips5":["每两周主动推进一次关系。不需要大动作，一次邀约就够。","把\"我都可以\"换成\"我更想要这个\"。这会让人重新评估你的分量。","在关键节点上把在意说出口。不用天天说，但重要的时候要说。","每两周主动推进一次关系。不需要大动作，一次邀约就够。","在关键节点上把在意说出口。不用天天说，但重要的时候要说。"],"script":["当你等他来约的时候 → 改成：「我挺想见你的，这周有空吗？」","当你说「我都可以」的时候 → 改成：「我更想要这个。」","当你把喜欢藏起来的时候 → 改成：「跟你聊天挺开心的。」"],"drill":["第 1 天：主动发起一次见面。","第 3 天：明确拒绝一次你不想要的安排。","第 5 天：说一次「我在意」。","第 7 天：回看这一周，哪一件你明明想要，却没开口？"]},"PDGS":{"n":"刺猬型 · 灼","s":"被动 · 防御 · 全情 · 敏感","g":"嘴上说不要，心里比谁都想被抱住","you":["你不会表达，甚至习惯先拒绝。别人示好的时候你的第一反应是往后退，因为你已经习惯了在最坏的结果发生之前，先把自己藏好。","但你对关系的感知极其敏锐。对方的一点变化你都能察觉到，你在意的东西比谁都多。你会默默为他做很多事，却一定要表现成\"顺手而已\"——因为承认在意，就意味着承认自己可能受伤。"],"life":["你是最矛盾的那个——越在乎越冷淡，越想靠近越先撤退。你用距离保护自己，也用距离一次次把想靠近的人推开。","你的付出是隐形的。你不会说\"我为你做了什么\"，只会说\"顺便\"。对方如果不仔细，几乎不可能发现你为他做过的事。"],"adv":["你的在意从来不是表演。被你放在心上的人会得到很深的照顾。","敏锐。你能读懂别人读不到的信息，这让你几乎不会看错人。","自持。你不依附任何人，你的一切付出都是自愿的。"],"weak":["你的防御把\"我想被爱\"的信号全部挡掉了。对方很容易以为你根本不需要他。","你把被拒绝的痛提前预支了。结果是关系还没开始，你就已经进入防备状态。","你几乎从不求助。所以永远没有人有机会为你做点什么。"],"trap":["用冷淡保护自己，结果把人推走。你以为推开的是伤害，其实推开的是机会。","把付出伪装成\"顺手\"。你不邀功，对方就永远不知道你做了什么。","让对方猜。你在心里给了很多次机会，但对方根本不知道自己正在被考察。"],"fit":["适合你的：耐心、稳定、不把冷淡当拒绝的人。他得看得懂你的刺下面是什么，并且愿意等。","不适合你的：需要快速确认、容易受伤的人。你的节奏会让他以为自己在被拒绝，然后他会先走。"],"tips":["每周接受一次别人的好意。不用立刻回报，只要不拒绝。","把\"顺手\"改成\"我特意弄的\"。说出来不会让你变弱，只会让他知道你在这里。","给一个明确的信号。哪怕只是一句\"最近还好吗\"，也比你沉默着等他猜强。"],"den":"高浓度时你的刺会竖得更紧，越在意越要装作无所谓；低浓度时你能坦然接受好意，不必先设防。","one":"你不是不想被抱住，你只是不相信有人抱得住。","tips5":["每周接受一次别人的好意。不用立刻回报，只要不拒绝。","把\"顺手\"改成\"我特意弄的\"。说出来不会让你变弱，只会让他知道你在这里。","给一个明确的信号。哪怕只是一句\"最近还好吗\"，也比你沉默着等他猜强。","每周接受一次别人的好意。不用立刻回报，只要不拒绝。","把「顺手」改成「我特意弄的」——说出来不会让你变弱，只会让他知道你在这里。"],"script":["当你想完全沉默的时候 → 改成：「最近还好吗？」","当你想说「顺便」的时候 → 改成：「我特意给你弄的。」","当你永远不表态的时候 → 改成：「我其实挺在意你的。」（一次就够）"],"drill":["第 1 天：接受一次示好，不说「不用了」。","第 3 天：主动问一句「今天怎么样」。","第 5 天：把一件藏着的付出说出来。","第 7 天：写下三条「我以为他应该知道，但没说出来」的事。"]},"PDGC":{"n":"刺猬型 · 朗","s":"被动 · 防御 · 全情 · 钝感","g":"不表达，但认定了就全力托住","you":["你不说感情，也不太会读气氛，但你对关系的投入是真实的。你不太表达，也不太会表达——你觉得用嘴说出来的东西都不太可靠。","你有一种很稳的特质。你不容易被情绪影响，也不太会因为一件小事反复琢磨。你的状态很稳定，不会忽高忽低。"],"life":["你看起来冷淡、慢热，实际上是关系里最靠得住的一方。你的爱不是靠说的，是靠一年一年待出来的。","你不太会制造浪漫，但你会把所有实际的问题解决掉。对方记得的往往是\"那时候是他在\"，而不是你说了什么。"],"adv":["稳定、忠诚、不情绪化。是那种能一起走很久的类型。","可靠。你答应的事都会做到，做不到的你不会说。","不折腾。你没有控制欲，也不太会情绪绑架对方。"],"weak":["表达太少。对方在确认\"你到底在不在意\"的过程中，很容易先累。","你的慢热容易在关系早期被误读成没兴趣。","你不太会处理对方的情绪。他难受的时候你容易沉默，而沉默会被理解成冷漠。"],"trap":["把\"我都做了\"当成\"我已经表达过了\"。做了不等于表达了，对方需要听到。","用沉默应对情绪。你不吵不闹，但对方要的是回应，不是安静。","关系早期太慢。很多人等不到你热起来的那天。"],"fit":["适合你的：耐心、看重实际行动、不要求高频情绪回应的人。","不适合你的：需要大量情绪确认、需要被反复表达爱的人。他会长期感到不被回应。"],"tips":["每周说一句明确的在意。哪怕是\"有你在挺好\"这种程度。","对方情绪低落时，不要说\"没事\"。说一句\"我在这儿\"，效果完全不同。","关系早期多给一点信号。让别人知道你是慢热，而不是没兴趣。"],"den":"高浓度时你会把对方划进自己的责任范围默默托底；低浓度时你依然可靠，但不带执念。","one":"你的爱像地基，看不见，但一直在承重。","tips5":["每周说一句明确的在意。哪怕是\"有你在挺好\"这种程度。","对方情绪低落时，不要说\"没事\"。说一句\"我在这儿\"，效果完全不同。","关系早期多给一点信号。让别人知道你是慢热，而不是没兴趣。","每周说一句明确的在意，哪怕是「有你在挺好」这种程度。","对方情绪低落时不要说「没事」，说一句「我在这儿」。"],"script":["当你什么都不说的时候 → 改成：「有你在挺好。」","当你想说「没事的」的时候 → 改成：「我在这儿。」","当你想自己扛的时候 → 改成：「我今天想跟你待一会。」"],"drill":["第 1 天：说一句明确的在意。","第 3 天：对方情绪不好时，只说「我在这儿」，不给建议。","第 5 天：主动安排一次两个人的时间。","第 7 天：说出三件你做过的、但从没提过的事。"]},"PDHS":{"n":"刺猬型 · 涌","s":"被动 · 防御 · 克制 · 敏感","g":"看起来最冷，内耗最深","you":["你不主动、不表达、也不轻易投入，但你对关系的感知极其敏感。你会把每条消息的措辞、每次回复的时间都过一遍，然后继续什么都不说。","你的内心世界极其丰富，但对外只有一扇很小的窗。你观察得很多，判断得很快，但不会让任何人知道你看出了什么。"],"life":["你是关系里最难被读懂的那个。你用距离保护自己，也用距离把想靠近的人一遍遍推开——推完之后，自己在心里难受很久。","你几乎不投入，所以你的关系通常很浅。不是你不想要深度，是你把深度的门槛设得太高，没人能在一开始就达到。"],"adv":["极度独立。你很少在关系里失控，也不会被人拿捏。你永远知道自己站在哪。","判断快而准。你能很快看出一个人的问题，也因此避开了很多坑。","情绪不外溢。你不会把自己的不安传递给别人。"],"weak":["所有的敏感都用来了自我消耗。别人甚至不知道你在难受，这是最孤独的一种内耗。","你不需要别人，所以也没人有机会接近你。","你的克制让关系停在表面，而你想要的是深度。"],"trap":["用距离筛选人。你以为那是谨慎，其实那是拒绝。","把\"不需要\"当铠甲。你越表现得不需要，别人就越不会给。","在沉默里独自难受。没有人知道你在经历什么，所以也没有人能帮你。"],"fit":["适合你的：稳定到不怕冷、并且会主动靠近的人。他得不着急，也得不怕被你推。","不适合你的：需要即时回应的人。你的节奏会让他误以为被拒绝，然后离开。"],"tips":["允许自己主动一次。哪怕只是问一句\"今天怎么样\"。","把感受说出口一次。不用全部，一句就够，你会发现并没有想象中可怕。","降低一点门槛。不是所有人都有耐心——这是现实，不是你的错，但你可以调整。"],"den":"高浓度时你的内耗会到峰值，别人却完全看不出来；低浓度时你才能真的保持距离，而不是硬撑。","one":"你不需要更勇敢，你只需要遇到一个不着急的人。","tips5":["允许自己主动一次。哪怕只是问一句\"今天怎么样\"。","把感受说出口一次。不用全部，一句就够，你会发现并没有想象中可怕。","降低一点门槛。不是所有人都有耐心——这是现实，不是你的错，但你可以调整。","允许自己主动一次，哪怕只是问一句「今天怎么样」。","降低一点门槛——不是所有人都有耐心，这是现实，不是你的错，但你可以调整。"],"script":["当你想什么都不说的时候 → 改成：「今天怎么样？」","当你说不出感受的时候 → 改成：「我最近有点累。」（说事实，不说感受）","当你想直接消失的时候 → 改成：「我可能需要一点时间。」"],"drill":["第 1 天：主动问一句话。","第 3 天：说一次自己的状态。","第 5 天：在有人靠近时，不做后退动作。","第 7 天：写下你这周推开过的机会。"]},"PDHC":{"n":"刺猬型 · 淡","s":"被动 · 防御 · 克制 · 钝感","g":"直接、清醒、不靠近，也不内耗","you":["你不主动、不表达、不多投入，也不太被情绪影响。你对关系看得很清楚，也不太愿意为了谁改变自己的节奏。","你有一种近乎免疫的稳定。别人会因为一段关系情绪起伏，你不太会。你的感受阈值很高，很多事情在你这里不构成问题。"],"life":["你是关系里最\"钝\"也最稳的那个。喜欢就是喜欢，但你不会为它失控，更不会为它做超出计划的事。","你不太会有\"非他不可\"的时刻。你能和很多人相处得很好，但也能很快回到一个人的状态。"],"adv":["极度清醒、情绪成本极低。在感情里几乎不受伤，你活得比大多数人都省力。","不依赖。你的快乐不来自别人，所以你不会在关系里失去自己。","稳定。你不会有忽冷忽热的表现，跟你相处不需要揣摩。"],"weak":["你的低波动容易被理解成\"不在乎\"，也很难让人有被偏爱的感觉。","你不太会为谁破例，所以很难让人感到\"我对你不一样\"。","你不太投入，也就很难体验到深度的亲密。"],"trap":["把\"我不需要\"当成真相。有时候那不是不需要，是从未允许自己被满足。","用稳定回避风险。不投入就不会受伤，但也不会得到。","让对方感觉不到特殊性。关系里最珍贵的部分，恰恰是\"我为你破例\"。"],"fit":["适合你的：同样独立、不需要被频繁确认的人。两个人都自在，关系才长久。","不适合你的：情感需求强、需要高频确认的人。他会长期觉得自己在一厢情愿。"],"tips":["为对方破例一次。做一件你原本不会做的事，这会比任何话都有分量。","在关系里主动表达一次\"想要\"。不用多，一次就够。","允许自己有一点\"不划算\"的投入。理性之外的东西，才是关系的意义。"],"den":"高浓度时你会为对方破一次例；低浓度时你几乎不会被这段关系影响，也不会主动靠近。","one":"你不是不心动，你只是从不打算让任何人影响你的节奏。","tips5":["为对方破例一次。做一件你原本不会做的事，这会比任何话都有分量。","在关系里主动表达一次\"想要\"。不用多，一次就够。","允许自己有一点\"不划算\"的投入。理性之外的东西，才是关系的意义。","为对方破例一次——做一件你原本不会做的事，这比任何话都有分量。","允许自己有一点「不划算」的投入。理性之外的东西，才是关系的意义。"],"script":["当你想说「改天吧」的时候 → 改成：「今天想见你。」","当你从不破例的时候 → 改成：「这次我为你破个例。」","当你什么都自己定的时候 → 改成：「这件事我想听听你的想法。」"],"drill":["第 1 天：做一件超出你原本计划的事。","第 3 天：主动说一次「想要」。","第 5 天：接受一次「不太划算」的邀约。","第 7 天：回顾这一周，你有几次其实想靠近，但按住了？"]}};
+var DIMN=['主动度','敞开度','投入度','敏感度','关系浓度'];
+var NEG =['被动等待','自我保护','克制保留','情绪钝感',''];
+var POS =['主动推进','情感外露','全情付出','高度敏感',''];
+var OPTK=['A','B','C','D'];
+
+function $(id){return document.getElementById(id);}
+function show(id){
+  var ss=document.querySelectorAll('.screen');
+  for(var i=0;i<ss.length;i++) ss[i].classList.remove('active');
+  $(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ---------- 有效期与须知 ---------- */
+var TSK='xindong_first_use';            /* 首次解锁时间戳 */
+
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+function validInfo(){
+  var n=PWD_VALID_DAYS;
+  if(!n || n<=0) return {limited:false, days:0, started:false, leftMs:0};
+  var t=parseInt(lsGet(TSK)||'0',10);
+  if(!t) return {limited:true, days:n, started:false, leftMs:0};
+  return {limited:true, days:n, started:true, leftMs:t+n*86400000-Date.now()};
+}
+function humanLeft(ms){
+  if(ms<=0) return '已过期';
+  var hr=ms/3600000;
+  if(hr<1)  return '剩余 '+Math.max(1,Math.round(ms/60000))+' 分钟';
+  if(hr<24) return '剩余 '+Math.floor(hr)+' 小时';
+  return '剩余 '+Math.ceil(ms/86400000)+' 天';
+}
+function renderValidBox(){
+  var el=$('validBox'); if(!el) return;
+  var v=validInfo(), s;
+  if(!v.limited){
+    s='<b>密码有效期</b>：长期有效，可正常使用。';
+  }else if(!v.started){
+    s='<b>密码有效期</b>：自首次解锁起 <b>'+v.days+' 天</b>，请在有效期内完成测试。';
+  }else if(v.leftMs>0){
+    s='<b>密码有效期</b>：自首次解锁起 '+v.days+' 天，<b>'+humanLeft(v.leftMs)+'</b>。';
+  }else{
+    s='<b>密码已过期</b>：本次访问密码有效期 '+v.days+' 天，请重新获取密码后使用。';
+  }
+  el.innerHTML=s;
+}
+function noticeItems(){
+  var v=validInfo();
+  return [
+    '本测评需输入密码访问，<b>密码仅供本人使用</b>，请勿分享、转发给他人。',
+    '<b>本页面不保存任何作答记录与测评结果。</b>所有作答仅在当前页面内临时计算，关闭或刷新页面后全部清空，服务器端无任何留存。',
+    '测评内容版权归作者所有，<b>仅限个人使用</b>。',
+    '<b>请勿复制、传播、转售或倒卖</b>本测评的任何内容，包括题目、维度设定、类型命名与结果文案。',
+    '一经发现侵权行为，<b>将依法维权</b>。',
+    v.limited ? ('密码自首次解锁起 <b>'+v.days+' 天</b>内有效，到期后需重新获取密码。')
+              : '密码长期有效。'
+  ];
+}
+(function initNotice(){
+  renderValidBox();
+  var html=noticeItems().map(function(t){ return '<li>'+t+'</li>'; }).join('');
+  ['noticeInline','noticeList','noticeFull'].forEach(function(id){
+    var el=$(id); if(el) el.innerHTML=html;
+  });
+})();
+
+/* ============ 锁屏 ============ */
+var eyeOn=false;
+$('eye').onclick=function(){ eyeOn=!eyeOn; $('pw').type=eyeOn?'text':'password'; $('eye').textContent=eyeOn?'隐藏':'显示'; };
+function shakeIt(){ $('lockbox').classList.remove('shake'); void $('lockbox').offsetWidth; $('lockbox').classList.add('shake'); }
+function tryUnlock(){
+  var v=$('pw').value;
+  if(!v){ $('err').textContent='请输入密码'; $('err').classList.add('on'); shakeIt(); return; }
+  if(checksum(v)!==curHash()){
+    $('err').textContent='密码不对，再试一次'; $('err').classList.add('on'); shakeIt(); $('pw').select(); return;
+  }
+  var vi=validInfo();
+  if(vi.limited && vi.started && vi.leftMs<=0){
+    $('err').textContent='本次访问密码已过期，请重新获取密码'; $('err').classList.add('on'); shakeIt(); return;
+  }
+  if(vi.limited && !vi.started) lsSet(TSK, String(Date.now()));
+  renderValidBox();
+  $('err').classList.remove('on'); sessionStorage.setItem('xd_ok','1'); show('intro');
+}
+$('unlock').onclick=tryUnlock;
+$('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') tryUnlock(); });
+
+/* ============ 弹层 ============ */
+/* 改密入口已从界面隐藏，仅保留内部维护通道：
+   ① 在锁屏页连点品牌名「心 动 物 种」5 次
+   ② 或在任意页面按 Ctrl / ⌘ + Shift + P */
+function openSetModal(){
+  $('setModal').classList.add('on'); $('setHint').textContent=''; $('hashWrap').style.display='none';
+}
+(function hiddenEntry(){
+  var brand=document.querySelector('.brand'), tap=0, last=0;
+  if(brand) brand.addEventListener('click',function(){
+    var now=Date.now();
+    if(now-last>1600) tap=0;
+    last=now; tap++;
+    if(tap>=5){ tap=0; openSetModal(); }
+  });
+  document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='P'||e.key==='p')){ e.preventDefault(); openSetModal(); }
+  });
+})();
+$('setCancel').onclick=function(){ $('setModal').classList.remove('on'); };
+$('setReset').onclick=function(){
+  localStorage.removeItem(LSK);
+  $('setHint').className='hint ok'; $('setHint').textContent='已恢复为文件默认密码。';
+};
+$('setSave').onclick=function(){
+  var o=$('oldPw').value, n=$('newPw').value, n2=$('newPw2').value, H=$('setHint');
+  H.className='hint bad';
+  if(checksum(o)!==curHash()){ H.textContent='当前密码不正确。'; return; }
+  if(n.length<4){ H.textContent='新密码至少 4 位。'; return; }
+  if(n!==n2){ H.textContent='两次输入的新密码不一致。'; return; }
+  if(/[^\x00-\x7F]/.test(n)){ H.textContent='密码请只用字母、数字和符号。'; return; }
+  var hh=checksum(n);
+  localStorage.setItem(LSK,hh);
+  H.className='hint ok'; H.textContent='已修改成功，本机立即生效。';
+  $('hashOut').textContent=hh; $('hashWrap').style.display='block';
+  $('oldPw').value=$('newPw').value=$('newPw2').value='';
+};
+
+/* ============ 答题 ============ */
+var ans=new Array(Q.length).fill(null);
+var idx=0;
+(function buildSegs(){
+  var box=$('segs'); box.innerHTML='';
+  for(var i=0;i<Q.length;i++) box.appendChild(document.createElement('i'));
+})();
+function renderQ(){
+  var q=Q[idx];
+  $('qcur').textContent=(idx+1);
+  $('qpct').textContent=Math.round(ans.filter(function(a){return a!==null;}).length/Q.length*100)+'%';
+  $('qindex').textContent='Q '+String(idx+1).padStart(2,'0');
+  $('qtext').textContent=q.t;
+  var segs=$('segs').children;
+  for(var s=0;s<segs.length;s++) segs[s].className = s<idx ? 'done' : (s===idx ? 'now' : '');
+  var box=$('qopts'); box.innerHTML='';
+  for(var k=0;k<4;k++){
+    (function(L){
+      var d=document.createElement('div');
+      d.className='opt'+(ans[idx]===L?' sel':'');
+      d.innerHTML='<span class="k">'+L+'</span><span class="tx">'+q.o[k]+'</span>';
+      d.onclick=function(){ pick(L); };
+      box.appendChild(d);
+    })(OPTK[k]);
+  }
+  $('prev').style.visibility = idx===0 ? 'hidden' : 'visible';
+}
+function pick(L){
+  ans[idx]=L;
+  var os=document.querySelectorAll('#qopts .opt');
+  for(var i=0;i<os.length;i++) os[i].classList.toggle('sel', os[i].querySelector('.k').textContent===L);
+  setTimeout(function(){
+    if(idx<Q.length-1){ idx++; renderQ(); }
+    else{
+      var segs=$('segs').children;
+      for(var s=0;s<segs.length;s++) segs[s].className='done';
+      $('qpct').textContent='100%'; finish();
+    }
+  },230);
+}
+$('prev').onclick=function(){ if(idx>0){ idx--; renderQ(); } };
+$('start').onclick=function(){ idx=0; ans=new Array(Q.length).fill(null); renderQ(); show('quiz'); };
+$('again').onclick=function(){ idx=0; ans=new Array(Q.length).fill(null); renderQ(); show('quiz'); };
+
+/* ============ 计分 ============ */
+function scores(){
+  var acc=[0,0,0,0,0];
+  for(var i=0;i<Q.length;i++){
+    var a=ans[i]; if(a===null) continue;
+    var v=OPTK.indexOf(a)/3;
+    if(Q[i].rev) v=1-v;
+    acc[Q[i].d-1]+=Q[i].w*v;
+  }
+  return acc.map(function(x){ return Math.round((20+x/5*80)*10)/10; });
+}
+
+/* ============ 雷达图 ============ */
+function radar(vals){
+  var cx=150, cy=140, R=94, N=5;
+  function pt(i,v){ var a=-Math.PI/2+i*2*Math.PI/N, r=R*v/100;
+    return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+  var s='';
+  [0.25,0.5,0.75,1].forEach(function(k){
+    var p=[]; for(var i=0;i<N;i++){var q=pt(i,k*100); p.push(q[0].toFixed(1)+','+q[1].toFixed(1));}
+    s+='<polygon points="'+p.join(' ')+'" fill="none" stroke="'+(k===1?'#E2E2E6':'#F0F0F3')+'" stroke-width="1"/>';
+  });
+  for(var i=0;i<N;i++){
+    var e=pt(i,100);
+    s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'" stroke="#F0F0F3" stroke-width="1"/>';
+    var L=pt(i,128);
+    s+='<text x="'+L[0].toFixed(1)+'" y="'+L[1].toFixed(1)+'" text-anchor="middle" dominant-baseline="central" font-size="11" font-weight="600" fill="#9A9CA1">'+DIMN[i]+'</text>';
+  }
+  var p=[];
+  for(var j=0;j<N;j++){var q2=pt(j,vals[j]); p.push(q2[0].toFixed(1)+','+q2[1].toFixed(1));}
+  s+='<polygon points="'+p.join(' ')+'" fill="rgba(255,36,66,.13)" stroke="#FF2442" stroke-width="2"/>';
+  for(var k2=0;k2<N;k2++){var q3=pt(k2,vals[k2]);
+    s+='<circle cx="'+q3[0].toFixed(1)+'" cy="'+q3[1].toFixed(1)+'" r="3.2" fill="#FF2442" stroke="#fff" stroke-width="1.8"/>';}
+  return s;
+}
+
+/* ============ 出结果 ============ */
+function finish(){
+  var sc=scores();
+  var A=sc[0]>=60, O=sc[1]>=60, G=sc[2]>=60, S=sc[3]>=60;
+  var code=(A?'A':'P')+(O?'O':'D')+(G?'G':'H')+(S?'S':'C');
+  var T=TYPES[code];
+  var dk=sc[4]>=65?'高浓度':(sc[4]>=45?'中浓度':'低浓度');
+
+  $('rcode').textContent=code;
+  $('rname').textContent=T.n;
+  $('rsub').textContent=T.s;
+  $('rslogan').textContent='「'+T.g+'」';
+  $('radar').innerHTML=radar(sc);
+
+  var rows='';
+  for(var i=0;i<5;i++){
+    var lab = i<4 ? (sc[i]>=60?POS[i]:NEG[i]) : dk;
+    rows+='<div class="srow"><span class="sn">'+DIMN[i]+'</span><span class="sv">'+sc[i].toFixed(1)+'</span>'+
+          '<span class="st"><i data-w="'+sc[i]+'"></i></span><span class="sl">'+lab+'</span></div>';
+  }
+  $('rdims').innerHTML=rows;
+  setTimeout(function(){
+    var bs=$('rdims').querySelectorAll('.st i');
+    for(var b=0;b<bs.length;b++) bs[b].style.width=bs[b].getAttribute('data-w')+'%';
+  },60);
+
+  function ul(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';}
+  function pp(a){return a.map(function(x){return '<p>'+x+'</p>';}).join('');}
+  function dr(a){
+    return '<ul>'+a.map(function(x){
+      var i=x.indexOf('：');
+      return '<li><span class="day">'+x.slice(0,i)+'</span>'+x.slice(i+1)+'</li>';
+    }).join('')+'</ul>';
+  }
+  var seq=0;
+  function sec(t,body,alt){
+    seq++;
+    return '<div class="sec'+(alt?' alt':'')+'" style="animation-delay:'+(seq*55)+'ms">'+
+      '<div class="sec-h"><span class="sec-n">'+String(seq).padStart(2,'0')+'</span><h3>'+t+'</h3></div>'+body+'</div>';
+  }
+  var strong=sc.indexOf(Math.max.apply(null,sc));
+  var html='';
+  html+=sec('你是这样的人',pp(T.you));
+  html+=sec('恋爱里的样子',pp(T.life));
+  html+=sec('你的三个优势',ul(T.adv));
+  html+=sec('你的三个软肋',ul(T.weak));
+  html+=sec('会踩的三个坑',ul(T.trap));
+  html+=sec('什么样的人适合你',pp(T.fit));
+  html+=sec('给你的五条建议',ul(T.tips5),true);
+  html+=sec('可以直接用的话术',ul(T.script),true);
+  html+=sec('7 天小练习',dr(T.drill));
+  html+=sec('关系浓度的影响','<p>'+T.den+'</p>');
+  html+=sec('最突出的维度','<p>你的<span class="hi">'+DIMN[strong]+'</span>得分最高（'+sc[strong].toFixed(1)+
+    ' 分），这是你恋爱人格里最鲜明的一项，也最容易成为你在关系里的主旋律。</p>');
+  $('rcontent').innerHTML=html;
+  $('rone').innerHTML='<span>给 你 的 一 句 话</span><div>'+T.one+'</div>';
+  show('result');
+}
+
+if(sessionStorage.getItem('xd_ok')==='1'){ show('intro'); }
+</script>
+</body>
+</html>
