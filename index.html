@@ -227,35 +227,8 @@ body{
 <body>
 <div id="app">
 
-<!-- ========== 锁屏 ========== -->
-<section id="lock" class="screen active">
-  <div class="lockbox" id="lockbox">
-    <div class="mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-      </svg>
-    </div>
-    <div class="brand">心 动 物 种</div>
-    <h1>你是哪一种<br><em>恋爱物种</em>？</h1>
-    <div class="sub">请输入访问密码</div>
-    <div class="pwfield">
-      <input id="pw" type="password" placeholder="输入密码" autocomplete="off">
-      <span class="eye" id="eye">显示</span>
-    </div>
-    <div class="err" id="err">密码不对，再试一次</div>
-    <button class="btn btn-main" id="unlock">进入测试</button>
-    <div class="valid" id="validBox"></div>
-    <div class="locknote">
-      <b class="pt">使 用 须 知</b>
-      <ul id="noticeInline"></ul>
-      <div class="agree">点击「进入测试」即视为已知悉并同意以上条款</div>
-    </div>
-  </div>
-</section>
-
 <!-- ========== 欢迎页 ========== -->
-<section id="intro" class="screen">
+<section id="intro" class="screen active">
   <div class="intro-wrap">
     <div class="eyebrow"><i></i>恋爱人格图鉴 · 五维十六型</div>
     <h1>你是哪一种<br><em>心动物种</em>？</h1>
@@ -336,89 +309,12 @@ body{
 
 </div>
 
-<!-- ========== 设置弹层 ========== -->
-<div class="modal" id="setModal">
-  <div class="modalbox">
-    <h2>修改访问密码</h2>
-    <div class="msub">修改后立即在本机生效。<br>如需所有设备都用新密码，把下方哈希值替换文件里的 PWD_HASH。</div>
-    <label>当前密码</label><input id="oldPw" type="password" placeholder="输入当前密码" autocomplete="off">
-    <label>新密码</label><input id="newPw" type="password" placeholder="6 位以上，仅用字母数字符号" autocomplete="off">
-    <label>确认新密码</label><input id="newPw2" type="password" placeholder="再输入一次" autocomplete="off">
-    <div class="hint" id="setHint"></div>
-    <div id="hashWrap" style="display:none">
-      <label>新密码哈希（替换文件中的 PWD_HASH）</label>
-      <div class="hashout" id="hashOut"></div>
-    </div>
-    <div class="modalbtns">
-      <button class="btn btn-gray" id="setCancel">取消</button>
-      <button class="btn btn-main" id="setSave">保存</button>
-    </div>
-    <div class="modalbtns" style="margin-top:9px">
-      <button class="btn btn-gray" id="setReset" style="font-size:13px">清除本机密码覆盖（恢复文件默认）</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ============================================================
-   心动物种 · 恋爱人格图鉴
+   心动物种 · 恋爱人格图鉴 · 免费版
    ------------------------------------------------------------
-   本文件不含任何明文密码。
-   改密方式：解锁后点「修改密码」，用生成的哈希替换 PWD_HASH；
-             替换后所有设备统一使用新密码。
-   有效期：修改 PWD_VALID_DAYS（单位：天，0 表示不限制）。
+   免费开放：打开即可测试，无需密码。
    ============================================================ */
-var PWD_HASH = "bc4abd43749de8bc324171ca55d3d6c7cb5ced48d4f882dee9fbf4c91c80bb34";
-var PWD_VALID_DAYS = 3;               /* 密码有效期（天），自首次解锁起算；设为 0 = 不限制 */
-var LSK = "xindong_pwd_hash";
-
-/* ---------- 纯 JS SHA-256 ---------- */
-function sha256(ascii){
-  function rr(v,a){return (v>>>a)|(v<<(32-a));}
-  var mp=Math.pow, mw=mp(2,32), result='';
-  var words=[], bitLen=ascii.length*8;
-  var hash=sha256.h=sha256.h||[], k=sha256.k=sha256.k||[], pc=k.length;
-  var comp={};
-  for(var c=2; pc<64; c++){
-    if(!comp[c]){
-      for(var i=0;i<313;i+=c){comp[i]=c;}
-      hash[pc]=(mp(c,.5)*mw)|0;
-      k[pc++]=(mp(c,1/3)*mw)|0;
-    }
-  }
-  ascii+='\x80';
-  while(ascii.length%64-56) ascii+='\x00';
-  for(i=0;i<ascii.length;i++){
-    var j=ascii.charCodeAt(i);
-    if(j>>8) return '';
-    words[i>>2]|=j<<((3-i)%4)*8;
-  }
-  words[words.length]=(bitLen/mw)|0;
-  words[words.length]=bitLen;
-  for(j=0;j<words.length;){
-    var w=words.slice(j,j+=16), oldHash=hash;
-    hash=hash.slice(0,8);
-    for(i=0;i<64;i++){
-      var w15=w[i-15], w2=w[i-2], a=hash[0], e=hash[4];
-      var t1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+
-        (w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+
-          (rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
-      var t2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
-      hash=[(t1+t2)|0].concat(hash);
-      hash[4]=(hash[4]+t1)|0;
-    }
-    for(i=0;i<8;i++) hash[i]=(hash[i]+oldHash[i])|0;
-  }
-  for(i=0;i<8;i++){
-    for(j=3;j+1;j--){
-      var b=(hash[i]>>(j*8))&255;
-      result+=((b<16)?0:'')+b.toString(16);
-    }
-  }
-  return result;
-}
-function curHash(){ return localStorage.getItem(LSK) || PWD_HASH; }
-function checksum(s){ return sha256(s); }
 
 /* ---------- 数据 ---------- */
 var Q = [{"d":1,"w":1.1,"rev":false,"t":"你想约他出来。","o":["我不会主动开口，最多发条朋友圈让他自己看见","我会先找个由头聊两句，看他的反应再决定","我会直接问他这周末有没有空","我会把时间和地点定好，问他要不要一起"]},{"d":1,"w":0.9,"rev":true,"t":"关系停滞了一阵，气氛有点淡。","o":["我会主动把话挑明，问清楚我们到底怎么回事","我会找个轻松的话题，试探着把气氛带起来","我会先等等看，也许过几天他自己会动","我不会做什么，感情这种事勉强不来"]},{"d":1,"w":1.0,"rev":false,"t":"你看到一部很想和他一起看的电影。","o":["先记着，等他哪天提起再说","说一句“最近这部好像不错”，然后看他接不接","直接问他哪天有空，我来订票","订好票，把场次发给他，问他哪天方便"]},{"d":1,"w":1.2,"rev":true,"t":"你们闹别扭后，对话框安静了两天。","o":["我先发消息把关系拉回来，冷战太难受了","我发一句不咸不淡的话，给他一个台阶","我先不动，看他什么时候来找我","我不会先开口，该来的自然会来"]},{"d":1,"w":0.8,"rev":false,"t":"关于关系里的“下一步”——公开、见朋友、认真谈未来。","o":["我倾向于顺其自然，不太会主动提","我会找个合适的时机，轻轻带一下","我会直接问他，我们现在算什么","我会主动推进，把这件事摆到台面上说清楚"]},{"d":2,"w":0.9,"rev":true,"t":"他问你“你最近是不是不太开心”。","o":["我会直接说，藏不住，你一眼就能看出来","我会说一点，但不会全说，留个尾","我会说“没什么”，然后换个话题","我会说“没有啊”，并且确实不想让他知道"]},{"d":2,"w":1.1,"rev":false,"t":"关于自己的过去、家里的事、那些不太想提起的部分。","o":["这些我基本不会跟任何人讲","除非被问得很直接，我才会说一点","关系到位了我会讲，愿意让他知道","我会主动讲，让他了解完整的我"]},{"d":2,"w":1.0,"rev":true,"t":"他做了一件让你很感动的事。","o":["我会直接表达我的感动，甚至可能眼眶红","我会说声谢谢，让他知道我心里有数","我心里很满，但说不出口，只是笑笑","我通常不太表现出来，记在心里就好"]},{"d":2,"w":1.2,"rev":false,"t":"他直接问你“你有多喜欢我”。","o":["我会用玩笑挡过去，或者只答一半","我会说个大概，但不会把话说满","我会老实说，哪怕听起来有点傻","我会把心里想的全说出来，一点不藏"]},{"d":2,"w":0.8,"rev":true,"t":"你在关系里最舒服的状态是。","o":["什么都能说，不用斟酌，不用想措辞","大部分都能说，少数几件事自己消化","各自留一点空间，不用全部交底","各自保留，最亲近的人也不必什么都知道"]},{"d":3,"w":0.9,"rev":false,"t":"他随口说想吃某家店。","o":["我听完就过了，不会特意记着","我说“那下次一起去”，但不一定放心上","我记下来，找个机会提一下","我记下来，然后直接约时间带他去"]},{"d":3,"w":1.1,"rev":true,"t":"你们的时间安排冲突了。","o":["我会优先让着对方的节奏，我这边可以调","我会尽量找一个两全的办法","我先看这件事对我重不重要，再决定","我基本会先保住自己原有的安排"]},{"d":3,"w":1.2,"rev":false,"t":"关于付出。","o":["我会观察对方给了多少，再决定给多少","我会先付出一点，看对方的反应","我习惯先付出，不太会计较","我不太算，想给就给，给完也不记"]},{"d":3,"w":1.0,"rev":true,"t":"他需要你帮忙，但你今天状态真的很差。","o":["我还是会去，他需要我这件事更重要","我会去，但会让他知道我今天不太好","我会跟他说今天不行，改天一定到","我会先顾好自己，状态差的时候我帮不上忙"]},{"d":3,"w":0.8,"rev":false,"t":"关系里你更在意的是。","o":["我有没有保住自己","我们有没有找到平衡","我有没有给够","他有没有被我照顾到"]},{"d":4,"w":1.1,"rev":true,"t":"他今天回消息比平时慢，语气也短了。","o":["我会想很多，把那几句话反复看几遍","我会留意一下，但不会太往心里去","我觉得可能就是在忙，不太在意","我基本不会注意到这种差别"]},{"d":4,"w":1.2,"rev":false,"t":"他提了一句“我前女友以前也这样”。","o":["我听完就过去了，不会多想","我当时没什么感觉，过后可能想起来","我会有一点点不舒服，但不会表现出来","这句话我大概会记住很久"]},{"d":4,"w":1.0,"rev":true,"t":"你发出去的一条消息，他过了四个小时才回。","o":["这四个小时里我会反复想起这件事","我会时不时看一眼手机，有点在意","我知道他可能在忙，该干嘛干嘛","我根本没在意这件事"]},{"d":4,"w":0.9,"rev":false,"t":"关于对方的情绪变化。","o":["他不说我基本感觉不到","他表现得明显一点我才看得出来","一般能察觉到，但不会想太多","他哪怕只有一点点不对，我都能感觉到"]},{"d":4,"w":0.8,"rev":true,"t":"你们相处的时候，你更常处于。","o":["时刻在观察和解读他的状态","会留意他的反应，但不会一直盯着","比较放松，偶尔会琢磨一下","挺放松的，不太去想这些"]},{"d":5,"w":0.9,"rev":false,"t":"恋爱在你的生活里，占的比重是。","o":["是生活里很小的一块，我还有太多别的事","重要的一部分，但不是全部","占了挺大一块，很多安排会绕着它走","很大，我大部分时间都在想和它有关的事"]},{"d":5,"w":1.2,"rev":true,"t":"如果这段关系结束了，你需要多久才能回到正常。","o":["会很久，甚至影响其他事情的节奏","会难过一阵，需要点时间缓过来","会难过，但生活基本盘不会动","我大概很快就能继续往前"]},{"d":5,"w":1.0,"rev":false,"t":"你希望恋爱给你带来的是。","o":["一件让生活变得更好的事","一个可以一起往前走的人","生活中排在前面的那件事","一种被稳稳托住的重心"]},{"d":5,"w":1.1,"rev":true,"t":"关于“为了一段关系改变自己”。","o":["我愿意为了关系调整很多，包括一些习惯","我会调整，只要不是原则问题","我会调整，但有底线，不会大改","我不会为了谁改变自己，合得来就合"]},{"d":5,"w":0.8,"rev":false,"t":"闲下来的时候，你更常是。","o":["做自己的事，很少想起他","做自己的事，偶尔会想起他","有不少时候在想他","大部分空闲时间都在想他，或者做和他有关的事"]}];
@@ -436,118 +332,22 @@ function show(id){
   window.scrollTo(0,0);
 }
 
-/* ---------- 有效期与须知 ---------- */
-var TSK='xindong_first_use';            /* 首次解锁时间戳 */
-
-function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
-function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
-
-function validInfo(){
-  var n=PWD_VALID_DAYS;
-  if(!n || n<=0) return {limited:false, days:0, started:false, leftMs:0};
-  var t=parseInt(lsGet(TSK)||'0',10);
-  if(!t) return {limited:true, days:n, started:false, leftMs:0};
-  return {limited:true, days:n, started:true, leftMs:t+n*86400000-Date.now()};
-}
-function humanLeft(ms){
-  if(ms<=0) return '已过期';
-  var hr=ms/3600000;
-  if(hr<1)  return '剩余 '+Math.max(1,Math.round(ms/60000))+' 分钟';
-  if(hr<24) return '剩余 '+Math.floor(hr)+' 小时';
-  return '剩余 '+Math.ceil(ms/86400000)+' 天';
-}
-function renderValidBox(){
-  var el=$('validBox'); if(!el) return;
-  var v=validInfo(), s;
-  if(!v.limited){
-    s='<b>密码有效期</b>：长期有效，可正常使用。';
-  }else if(!v.started){
-    s='<b>密码有效期</b>：自首次解锁起 <b>'+v.days+' 天</b>，请在有效期内完成测试。';
-  }else if(v.leftMs>0){
-    s='<b>密码有效期</b>：自首次解锁起 '+v.days+' 天，<b>'+humanLeft(v.leftMs)+'</b>。';
-  }else{
-    s='<b>密码已过期</b>：本次访问密码有效期 '+v.days+' 天，请重新获取密码后使用。';
-  }
-  el.innerHTML=s;
-}
+/* ---------- 使用须知 ---------- */
 function noticeItems(){
-  var v=validInfo();
   return [
-    '本测评需输入密码访问，<b>密码仅供本人使用</b>，请勿分享、转发给他人。',
+    '<b>本测评完全免费</b>，无需注册、无需付费，测完即可查看完整结果。',
     '<b>本页面不保存任何作答记录与测评结果。</b>所有作答仅在当前页面内临时计算，关闭或刷新页面后全部清空，服务器端无任何留存。',
     '测评内容版权归作者所有，<b>仅限个人使用</b>。',
     '<b>请勿复制、传播、转售或倒卖</b>本测评的任何内容，包括题目、维度设定、类型命名与结果文案。',
-    '一经发现侵权行为，<b>将依法维权</b>。',
-    v.limited ? ('密码自首次解锁起 <b>'+v.days+' 天</b>内有效，到期后需重新获取密码。')
-              : '密码长期有效。'
+    '一经发现侵权行为，<b>将依法维权</b>。'
   ];
 }
 (function initNotice(){
-  renderValidBox();
   var html=noticeItems().map(function(t){ return '<li>'+t+'</li>'; }).join('');
-  ['noticeInline','noticeList','noticeFull'].forEach(function(id){
+  ['noticeList','noticeFull'].forEach(function(id){
     var el=$(id); if(el) el.innerHTML=html;
   });
 })();
-
-/* ============ 锁屏 ============ */
-var eyeOn=false;
-$('eye').onclick=function(){ eyeOn=!eyeOn; $('pw').type=eyeOn?'text':'password'; $('eye').textContent=eyeOn?'隐藏':'显示'; };
-function shakeIt(){ $('lockbox').classList.remove('shake'); void $('lockbox').offsetWidth; $('lockbox').classList.add('shake'); }
-function tryUnlock(){
-  var v=$('pw').value;
-  if(!v){ $('err').textContent='请输入密码'; $('err').classList.add('on'); shakeIt(); return; }
-  if(checksum(v)!==curHash()){
-    $('err').textContent='密码不对，再试一次'; $('err').classList.add('on'); shakeIt(); $('pw').select(); return;
-  }
-  var vi=validInfo();
-  if(vi.limited && vi.started && vi.leftMs<=0){
-    $('err').textContent='本次访问密码已过期，请重新获取密码'; $('err').classList.add('on'); shakeIt(); return;
-  }
-  if(vi.limited && !vi.started) lsSet(TSK, String(Date.now()));
-  renderValidBox();
-  $('err').classList.remove('on'); sessionStorage.setItem('xd_ok','1'); show('intro');
-}
-$('unlock').onclick=tryUnlock;
-$('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') tryUnlock(); });
-
-/* ============ 弹层 ============ */
-/* 改密入口已从界面隐藏，仅保留内部维护通道：
-   ① 在锁屏页连点品牌名「心 动 物 种」5 次
-   ② 或在任意页面按 Ctrl / ⌘ + Shift + P */
-function openSetModal(){
-  $('setModal').classList.add('on'); $('setHint').textContent=''; $('hashWrap').style.display='none';
-}
-(function hiddenEntry(){
-  var brand=document.querySelector('.brand'), tap=0, last=0;
-  if(brand) brand.addEventListener('click',function(){
-    var now=Date.now();
-    if(now-last>1600) tap=0;
-    last=now; tap++;
-    if(tap>=5){ tap=0; openSetModal(); }
-  });
-  document.addEventListener('keydown',function(e){
-    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==='P'||e.key==='p')){ e.preventDefault(); openSetModal(); }
-  });
-})();
-$('setCancel').onclick=function(){ $('setModal').classList.remove('on'); };
-$('setReset').onclick=function(){
-  localStorage.removeItem(LSK);
-  $('setHint').className='hint ok'; $('setHint').textContent='已恢复为文件默认密码。';
-};
-$('setSave').onclick=function(){
-  var o=$('oldPw').value, n=$('newPw').value, n2=$('newPw2').value, H=$('setHint');
-  H.className='hint bad';
-  if(checksum(o)!==curHash()){ H.textContent='当前密码不正确。'; return; }
-  if(n.length<4){ H.textContent='新密码至少 4 位。'; return; }
-  if(n!==n2){ H.textContent='两次输入的新密码不一致。'; return; }
-  if(/[^\x00-\x7F]/.test(n)){ H.textContent='密码请只用字母、数字和符号。'; return; }
-  var hh=checksum(n);
-  localStorage.setItem(LSK,hh);
-  H.className='hint ok'; H.textContent='已修改成功，本机立即生效。';
-  $('hashOut').textContent=hh; $('hashWrap').style.display='block';
-  $('oldPw').value=$('newPw').value=$('newPw2').value='';
-};
 
 /* ============ 答题 ============ */
 var ans=new Array(Q.length).fill(null);
@@ -688,7 +488,6 @@ function finish(){
   show('result');
 }
 
-if(sessionStorage.getItem('xd_ok')==='1'){ show('intro'); }
 </script>
 </body>
 </html>
